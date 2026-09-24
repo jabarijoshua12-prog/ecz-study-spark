@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import {
   ArrowRight, Atom, Beaker, BookOpen, BrainCircuit, CalendarDays,
   Check, ChevronLeft, FileText, FlaskConical, GraduationCap, GripVertical,
-  Home, LogOut, Pencil, Settings, Sigma, Target, Trophy, UserRound,
+  Home, LogOut, Moon, Pencil, Settings, Sigma, Sun, Target, Trophy, UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ export function StudyApp() {
 
   if (screen === "auth") return <AuthScreen name={name} setName={setName} onContinue={() => enter("baseline")} />;
   if (screen === "baseline") return <BaselineScreen scores={scores} setScores={setScores} onBack={() => enter("auth")} onContinue={() => enter("availability")} />;
-  if (screen === "availability") return <AvailabilityScreen onBack={() => enter("baseline")} onContinue={() => enter("routine")} />;
+  if (screen === "availability") return <AvailabilityScreen onBack={() => enter("baseline")} onContinue={() => enter("home")} />;
   if (screen === "routine") return <RoutineScreen routine={routine} setRoutine={setRoutine} onBack={() => enter("availability")} onConfirm={() => enter("home")} />;
 
   return (
@@ -67,9 +67,7 @@ function AuthScreen({ name, setName, onContinue }: { name: string; setName: (v: 
   return <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-between px-6 py-8">
     <Brand />
     <section className="py-10">
-      <div className="mb-8 grid size-16 place-items-center rounded-2xl bg-secondary text-primary"><BrainCircuit className="size-8" /></div>
-      <p className="mb-2 text-sm font-extrabold uppercase text-primary">Built for the ECZ syllabus</p>
-      <h1 className="text-4xl font-black leading-tight">Study with a plan that knows where you need help.</h1>
+      <h1 className="text-3xl font-black leading-tight">Study smarter with a plan built around you.</h1>
       <p className="mt-4 text-lg text-muted-foreground">Your daily subjects, focused revision, and exam practice in one place.</p>
       <form className="mt-8 space-y-4" onSubmit={(e) => { e.preventDefault(); onContinue(); }}>
         {signup && <label className="block text-sm font-bold">Your name<Input required value={name} onChange={(e) => setName(e.target.value)} className="mt-2 h-12 rounded-xl bg-card px-4" /></label>}
@@ -82,24 +80,25 @@ function AuthScreen({ name, setName, onContinue }: { name: string; setName: (v: 
   </main>;
 }
 
-function StepHeader({ step, title, copy, onBack }: { step: string; title: string; copy: string; onBack: () => void }) { return <><div className="flex items-center justify-between"><Button size="icon" variant="ghost" onClick={onBack} aria-label="Go back"><ChevronLeft /></Button><span className="text-sm font-bold text-muted-foreground">{step}</span></div><div className="mt-12"><p className="text-sm font-extrabold uppercase text-primary">Personal setup</p><h1 className="mt-2 text-3xl font-black">{title}</h1><p className="mt-3 text-muted-foreground">{copy}</p></div></>; }
+function StepHeader({ step, title, copy, onBack }: { step: string; title: string; copy: string; onBack: () => void }) { return <><div className="flex items-center justify-between"><Button size="icon" variant="ghost" onClick={onBack} aria-label="Go back"><ChevronLeft /></Button><span className="text-sm font-bold text-muted-foreground">{step}</span></div><div className="mt-10"><h1 className="text-2xl font-black">{title}</h1><p className="mt-2 text-sm text-muted-foreground">{copy}</p></div></>; }
 
 function BaselineScreen({ scores, setScores, onBack, onContinue }: { scores: Record<Subject, number>; setScores: (v: Record<Subject, number>) => void; onBack: () => void; onContinue: () => void }) {
-  return <main className="mx-auto min-h-screen max-w-lg px-5 py-6"><StepHeader step="1 of 3" title="Your starting point" copy="Enter the marks from your latest report card. This helps prioritize your study time." onBack={onBack} />
-    <div className="mt-8 overflow-hidden rounded-2xl border bg-card shadow-sm"><Table><TableHeader><TableRow><TableHead className="px-4">Core subject</TableHead><TableHead className="w-28 text-right">Mark (%)</TableHead></TableRow></TableHeader><TableBody>{subjects.map(({ name: subject, icon: Icon }) => <TableRow key={subject}><TableCell className="px-4"><span className="flex items-center gap-3 font-bold"><Icon className="size-5 text-primary" />{subject}</span></TableCell><TableCell><Input aria-label={`${subject} mark`} type="number" min="0" max="100" value={scores[subject]} onChange={(e) => setScores({ ...scores, [subject]: Number(e.target.value) })} className="h-10 text-center font-bold" /></TableCell></TableRow>)}</TableBody></Table></div>
-    <div className="mt-6 rounded-xl bg-secondary p-4 text-sm text-secondary-foreground"><b>We’ll focus first on Mathematics</b>, then Physics, based on these results.</div>
-    <Button className="mt-8 h-12 w-full rounded-xl font-extrabold" onClick={onContinue}>Confirm marks <ArrowRight /></Button>
+  const [editing, setEditing] = useState<Subject | null>(null);
+  return <main className="mx-auto min-h-screen max-w-lg px-5 py-6"><StepHeader step="1 of 2" title="Your starting point" copy="Add your latest report-card points from 1 (best) to 9." onBack={onBack} />
+    <div className="mt-7 overflow-hidden rounded-2xl border bg-card"><Table><TableHeader><TableRow><TableHead className="px-4">Core subject</TableHead><TableHead className="w-20 text-right">Points</TableHead></TableRow></TableHeader><TableBody>{subjects.map(({ name: subject, icon: Icon }) => <TableRow key={subject} onClick={() => setEditing(subject)} className="cursor-pointer"><TableCell className="px-4"><span className="flex items-center gap-3 font-bold"><Icon className="size-5 text-primary" />{subject}</span></TableCell><TableCell className="pr-6 text-right text-lg font-black text-primary">{scores[subject]}</TableCell></TableRow>)}</TableBody></Table></div>
+    <Button className="mt-7 h-11 w-full rounded-xl font-extrabold" onClick={onContinue}>Confirm</Button>
+    <Dialog open={editing !== null} onOpenChange={(open) => !open && setEditing(null)}><DialogContent className="max-w-xs rounded-2xl"><DialogHeader><DialogTitle>{editing}</DialogTitle><DialogDescription>Select the report-card point.</DialogDescription></DialogHeader><div className="grid grid-cols-3 gap-2">{[1,2,3,4,5,6,7,8,9].map(point => <Button key={point} variant={editing && scores[editing] === point ? "default" : "outline"} className="h-12" onClick={() => { if (editing) setScores({...scores,[editing]:point}); setEditing(null); }}>{point}</Button>)}</div></DialogContent></Dialog>
   </main>;
 }
 
 function AvailabilityScreen({ onBack, onContinue }: { onBack: () => void; onContinue: () => void }) {
   const [days, setDays] = useState(["Mon", "Tue", "Fri"]);
-  return <main className="mx-auto min-h-screen max-w-lg px-5 py-6"><StepHeader step="2 of 3" title="When can you study?" copy="Tell us when you can focus each week. You can change this later." onBack={onBack} />
-    <label className="mt-8 block text-sm font-bold">Hours per week<Input type="number" defaultValue="6" className="mt-2 h-12 rounded-xl bg-card px-4" /></label>
-    <div className="mt-6"><p className="text-sm font-bold">Study days</p><div className="mt-3 grid grid-cols-7 gap-2">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(day => <Button key={day} size="sm" variant={days.includes(day) ? "default" : "outline"} className="h-11 px-0" onClick={() => setDays(days.includes(day) ? days.filter(d => d !== day) : [...days, day])}>{day.slice(0,1)}</Button>)}</div></div>
-    <div className="mt-6 grid grid-cols-2 gap-3"><label className="text-sm font-bold">Start<Input type="time" defaultValue="14:00" className="mt-2 h-12 rounded-xl bg-card" /></label><label className="text-sm font-bold">Finish<Input type="time" defaultValue="16:00" className="mt-2 h-12 rounded-xl bg-card" /></label></div>
-    <div className="mt-6 rounded-2xl border border-dashed bg-card/50 p-4 text-sm text-muted-foreground/60">“I can study on Mon, Tue and Friday from 2 to 4pm.”</div>
-    <Button className="mt-8 h-12 w-full rounded-xl font-extrabold" onClick={onContinue}>Build my routine <ArrowRight /></Button>
+  const [timeOpen, setTimeOpen] = useState(false);
+  return <main className="mx-auto min-h-screen max-w-lg px-5 py-6"><StepHeader step="2 of 2" title="When can you study?" copy="Choose the days and time you can focus each week." onBack={onBack} />
+    <div className="mt-7"><p className="text-sm font-bold">Days per week</p><div className="mt-3 grid grid-cols-7 gap-2">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(day => <Button key={day} size="sm" variant={days.includes(day) ? "default" : "outline"} className="h-10 px-0" onClick={() => setDays(days.includes(day) ? days.filter(d => d !== day) : [...days, day])}>{day.slice(0,1)}</Button>)}</div></div>
+    <button onClick={() => setTimeOpen(true)} className="mt-6 flex w-full items-center justify-between rounded-xl border bg-card p-4 text-left"><span><b className="block text-sm">Study time</b><span className="text-sm text-muted-foreground">14:00 — 16:00</span></span><Clock3 className="text-primary"/></button>
+    <Button className="mt-7 h-11 w-full rounded-xl font-extrabold" onClick={onContinue}>Next <ArrowRight /></Button>
+    <Dialog open={timeOpen} onOpenChange={setTimeOpen}><DialogContent className="max-w-xs rounded-2xl"><DialogHeader><DialogTitle>Study time</DialogTitle><DialogDescription>Choose your usual study window.</DialogDescription></DialogHeader><div className="grid grid-cols-2 gap-3"><label className="text-sm font-bold">Start<Input type="time" defaultValue="14:00" className="mt-2 h-11"/></label><label className="text-sm font-bold">Finish<Input type="time" defaultValue="16:00" className="mt-2 h-11"/></label></div><Button onClick={() => setTimeOpen(false)}>Done</Button></DialogContent></Dialog>
   </main>;
 }
 
