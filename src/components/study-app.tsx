@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  ArrowRight, Atom, BarChart3, Beaker, BookOpen, BrainCircuit, CalendarDays,
-  Check, ChevronLeft, Clock3, FileText, FlaskConical, GraduationCap, GripVertical,
-  Home, LogOut, Menu, Pencil, Send, Settings, Sigma, Sparkle, Target, Trophy, UserRound,
+  ArrowRight, Atom, Beaker, BookOpen, BrainCircuit, CalendarDays,
+  Check, ChevronLeft, FileText, FlaskConical, GraduationCap, GripVertical,
+  Home, LogOut, Pencil, Settings, Sigma, Target, Trophy, UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
