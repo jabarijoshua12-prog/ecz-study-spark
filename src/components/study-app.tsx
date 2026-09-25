@@ -1,8 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight, Atom, Beaker, BookOpen, BrainCircuit, CalendarDays,
-  Check, ChevronLeft, Clock3, FileText, FlaskConical, GraduationCap, GripVertical,
-  Home, LogOut, Moon, Pencil, Settings, Sigma, Sun, Target, Trophy, UserRound,
+  ArrowRight, Atom, BookOpen, ChevronLeft, ChevronRight, Clock3, Dna, FileText, FlaskConical, GraduationCap, GripVertical,
+  Home, LogOut, Moon, Pencil, Pi, Target, Trophy, UserRound, ClipboardList, CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +17,11 @@ import { cn } from "@/lib/utils";
 
 type Screen = "auth" | "baseline" | "availability" | "routine" | "home" | "subjects" | "papers" | "tutor" | "settings";
 type Subject = "Mathematics" | "Biology" | "Physics" | "Chemistry";
-const subjects: { name: Subject; icon: typeof Sigma; color: string; intro: string; topics: string[] }[] = [
-  { name: "Mathematics", icon: Sigma, color: "bg-math/15 text-math", intro: "Numbers, algebra, geometry, statistics.", topics: ["Sets", "Algebra", "Matrices", "Trigonometry"] },
-  { name: "Biology", icon: FlaskConical, color: "bg-biology/15 text-biology", intro: "Cells, systems, ecology, genetics.", topics: ["Cell structure", "Nutrition", "Respiration", "Genetics"] },
+const subjects: { name: Subject; icon: typeof Pi; color: string; intro: string; topics: string[] }[] = [
+  { name: "Mathematics", icon: Pi, color: "bg-math/15 text-math", intro: "Numbers, algebra, geometry, statistics.", topics: ["Sets", "Algebra", "Matrices", "Trigonometry"] },
+  { name: "Biology", icon: Dna, color: "bg-biology/15 text-biology", intro: "Cells, systems, ecology, genetics.", topics: ["Cell structure", "Nutrition", "Respiration", "Genetics"] },
   { name: "Physics", icon: Atom, color: "bg-physics/15 text-physics", intro: "Motion, forces, energy, electricity.", topics: ["Motion", "Forces", "Energy", "Electricity"] },
-  { name: "Chemistry", icon: Beaker, color: "bg-chemistry/15 text-chemistry", intro: "Matter, reactions, acids, organic chemistry.", topics: ["Atomic structure", "Bonding", "Acids and bases", "Organic chemistry"] },
+  { name: "Chemistry", icon: FlaskConical, color: "bg-chemistry/15 text-chemistry", intro: "Matter, reactions, acids, organic chemistry.", topics: ["Atomic structure", "Bonding", "Acids and bases", "Organic chemistry"] },
 ];
 const schedule: { day: string; slots: { time: string; subject: Subject; topic: string }[] }[] = [
   { day: "Mon", slots: [{ time: "14:00", subject: "Mathematics", topic: "Matrices" }, { time: "15:00", subject: "Biology", topic: "Cell structure" }] },
