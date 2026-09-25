@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight, Atom, BookOpen, ChevronLeft, ChevronRight, Clock3, Dna, FileText, FlaskConical, GraduationCap, GripVertical,
+  ArrowRight, Atom, Check, BookOpen, ChevronLeft, ChevronRight, Clock3, Dna, FileText, FlaskConical, GraduationCap, GripVertical,
   Home, LogOut, Moon, Pencil, Pi, Target, Trophy, UserRound, ClipboardList, CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
