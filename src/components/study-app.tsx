@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import {
   ArrowRight, Atom, Beaker, BookOpen, BrainCircuit, CalendarDays,
-  Check, ChevronLeft, FileText, FlaskConical, GraduationCap, GripVertical,
+  Check, ChevronLeft, Clock3, FileText, FlaskConical, GraduationCap, GripVertical,
   Home, LogOut, Moon, Pencil, Settings, Sigma, Sun, Target, Trophy, UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
