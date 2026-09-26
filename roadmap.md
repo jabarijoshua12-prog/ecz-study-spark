@@ -14,3 +14,10 @@
 - [ ] Simplify home banner, colored horizontal due subjects, and remove shortcut grid
 - [ ] Match the AI Tutor reference layout; use π, DNA, beaker, and graduation-hat symbols
 - [ ] Rework Me as one vertical settings list with profile, Performance Baseline, Study Rhythm, theme, and sign out
+
+## Current mobile refinements
+- [ ] Make the platform dark-only with a black background and compact mobile frame
+- [ ] Show greeting, two study topics, and chat on Home; animate topics apart on chat focus
+- [ ] Complete today's topics through chat progress, not tapping topic cards
+- [ ] Make Exam its own tab with a paper-and-pen symbol and moved exam banner
+- [ ] Select exam date by tapping the full field, then rate topics in a choice dialog and Confirm
