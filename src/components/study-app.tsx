@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, Atom, Check, BookOpen, ChevronLeft, ChevronRight, Clock3, Dna, FileText, FlaskConical, GraduationCap, GripVertical,
-  Home, LogOut, Moon, Pencil, Pi, Target, Trophy, UserRound, ClipboardList, CalendarDays,
+  Home, LogOut, Pencil, Pi, Trophy, UserRound, ClipboardList, CalendarDays, FilePenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -36,6 +34,7 @@ export function StudyApp() {
   const [scores, setScores] = useState<Record<Subject, number>>({ Mathematics: 48, Physics: 57, Chemistry: 63, Biology: 72 });
   const [routine, setRoutine] = useState(schedule);
   const [toast, setToast] = useState("");
+  const [completedToday, setCompletedToday] = useState<Subject[]>([]);
   const showToast = (text: string) => { setToast(text); window.setTimeout(() => setToast(""), 2200); };
   const enter = (next: Screen) => { setScreen(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
@@ -46,11 +45,11 @@ export function StudyApp() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <main className="mx-auto w-full max-w-3xl px-5 pb-8 pt-7 sm:px-8 sm:pt-10">
-        {screen === "home" && <HomeScreen name={name} go={enter} />}
+      <main className="mx-auto w-full max-w-xl px-4 pb-6 pt-5 sm:px-6 sm:pt-8">
+        {screen === "home" && <HomeScreen name={name} completed={completedToday} onComplete={(subject) => setCompletedToday(current => current.includes(subject) ? current : [...current, subject])} />}
         {screen === "subjects" && <SubjectsScreen />}
         {screen === "papers" && <PapersScreen go={enter} />}
-        {screen === "tutor" && <TutorScreen name={name} />}
+        {screen === "tutor" && <ExamScreen />}
         {screen === "settings" && <SettingsScreen name={name} setName={setName} scores={scores} setScores={setScores} routine={routine} setRoutine={setRoutine} saved={showToast} signOut={() => enter("auth")} />}
       </main>
       <BottomNav current={screen} go={enter} />
@@ -111,16 +110,15 @@ function RoutineScreen({ routine, setRoutine, onBack, onConfirm, compact = false
   </div>;
 }
 
-function HomeScreen({ go }: { name: string; go: (s: Screen) => void }) {
-  const [due, setDue] = useState(["Mathematics", "Biology", "Physics"] as Subject[]);
-  const [removing, setRemoving] = useState<string | null>(null);
-  const complete = (subject: Subject) => { setRemoving(subject); window.setTimeout(() => { setDue(d => d.filter(x => x !== subject)); setRemoving(null); }, 800); };
+function HomeScreen({ name, completed, onComplete }: { name: string; completed: Subject[]; onComplete: (subject: Subject) => void }) {
+  const [chatActive, setChatActive] = useState(false);
   const topicFor: Record<Subject, string> = { Mathematics: "Matrices", Biology: "Cell structure", Physics: "Motion", Chemistry: "Bonding" };
-  return <>
-    <button onClick={() => go("tutor")} className="relative w-full overflow-hidden rounded-3xl bg-primary p-5 text-left text-primary-foreground shadow-md transition-transform active:scale-[.99]"><h2 className="relative z-10 text-2xl font-black leading-tight">Master every topic before exam day</h2><p className="relative z-10 mt-2 text-sm text-primary-foreground/80">Switch on Exam Mode two weeks before your exams.</p><span className="relative z-10 mt-4 flex items-center gap-2 text-sm font-extrabold">Open AI Tutor <ArrowRight className="size-4"/></span><span className="absolute -right-10 -top-14 size-36 rounded-full bg-primary-foreground/10"/><span className="absolute -bottom-24 right-6 size-44 rounded-full bg-primary-foreground/10"/></button>
-    <h2 className="mb-3 mt-6 text-lg font-black">Due today</h2>
-    <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2">{due.map(subject => { const item = subjects.find(s => s.name === subject)!; const Icon = item.icon; return <button key={subject} onClick={() => complete(subject)} className={cn("w-36 shrink-0 rounded-2xl border p-3 text-left", subjectTone[subject], removing === subject && "success-away")}><div className={cn("mb-3 grid size-9 place-items-center rounded-xl", item.color)}><Icon className="size-4"/></div><b className="block text-sm">{subject}</b><span className="text-xs opacity-70">{topicFor[subject]} · 40 min</span></button>; })}{due.length === 0 && <div className="w-full rounded-2xl bg-success-soft p-4 text-center text-sm font-bold text-primary"><Trophy className="mx-auto mb-2"/>You’re done for today!</div>}</div>
-  </>;
+  return <div className="flex min-h-[calc(100dvh-7rem)] flex-col">
+    <header className="mb-5"><div className="text-xs font-bold text-primary">ECZ Study</div><h1 className="mt-1 text-2xl font-black">Welcome, {name}!</h1></header>
+    <div className={cn("grid grid-cols-2 gap-2 transition-all duration-500 ease-in-out", chatActive ? "-mx-3 opacity-70 sm:-mx-8" : "")}>{(["Mathematics", "Biology"] as Subject[]).map((subject, index) => { const item = subjects.find(s => s.name === subject); if (!item) return null; const Icon = item.icon; const done = completed.includes(subject); return <div key={subject} className={cn("min-w-0 rounded-lg border p-3 transition-transform duration-500 ease-in-out", subjectTone[subject], chatActive && (index === 0 ? "-translate-x-2 sm:-translate-x-5" : "translate-x-2 sm:translate-x-5"), done && "border-success") }><div className="flex items-center justify-between"><span className={cn("grid size-8 place-items-center rounded-md", item.color)}><Icon className="size-4"/></span>{done && <Check className="size-4 text-success"/>}</div><b className="mt-3 block truncate text-sm">{subject}</b><p className="mt-0.5 truncate text-xs text-muted-foreground">{topicFor[subject]} · 40 min</p></div>; })}</div>
+    {completed.length >= 2 && <div className="mt-3 flex items-center gap-2 rounded-lg border border-success/40 bg-success-soft p-3 text-sm font-bold text-success"><Trophy className="size-4"/>You’re done for today!</div>}
+    <div className="mt-5 flex min-h-0 flex-1 flex-col" onFocusCapture={() => setChatActive(true)}><TutorScreen onComplete={onComplete} completed={completed} active={chatActive} onActivate={() => setChatActive(true)} /></div>
+  </div>;
 }
 
 function SubjectsScreen() { const [open, setOpen] = useState<Subject | null>(null); return <><PageTitle title="Subjects" copy="Pick a subject to see ECZ syllabus topics."/><div className="mt-6 space-y-3">{subjects.map(({ name, icon: Icon, color, intro, topics }) => <div key={name} className="overflow-hidden rounded-2xl border bg-card shadow-sm"><button className="flex w-full items-center gap-4 p-5 text-left" onClick={() => setOpen(open === name ? null : name)}><span className={cn("grid size-14 shrink-0 place-items-center rounded-2xl", color)}><Icon /></span><span className="min-w-0 flex-1"><b className="text-lg">{name}</b><span className="block truncate text-sm text-muted-foreground">{intro}</span></span><span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{topics.length} topics</span></button><div className={cn("grid transition-[grid-template-rows] duration-300", open === name ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}><div className="overflow-hidden"><div className="grid grid-cols-2 gap-2 border-t p-4">{topics.map(topic => <button key={topic} className="rounded-xl bg-muted p-3 text-left text-sm font-bold hover:bg-secondary">{topic}</button>)}</div></div></div></div>)}</div></>; }
