@@ -15,7 +15,7 @@ import { Message, MessageContent, MessageResponse } from "@/components/ai-elemen
 import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea } from "@/components/ai-elements/prompt-input";
 import { cn } from "@/lib/utils";
 
-type Screen = "auth" | "baseline" | "availability" | "routine" | "home" | "subjects" | "papers" | "tutor" | "settings";
+type Screen = "auth" | "baseline" | "availability" | "routine" | "home" | "subjects" | "papers" | "tutor" | "chat" | "settings";
 type Subject = "Mathematics" | "Biology" | "Physics" | "Chemistry";
 const subjects: { name: Subject; icon: typeof Pi; color: string; intro: string; topics: string[] }[] = [
   { name: "Mathematics", icon: Pi, color: "bg-math/15 text-math", intro: "Numbers, algebra, geometry, statistics.", topics: ["Sets", "Algebra", "Matrices", "Trigonometry"] },
@@ -42,6 +42,7 @@ export function StudyApp() {
   if (screen === "auth") return <AuthScreen name={name} setName={setName} onContinue={() => enter("baseline")} />;
   if (screen === "baseline") return <BaselineScreen scores={scores} setScores={setScores} onBack={() => enter("auth")} onContinue={() => enter("availability")} />;
   if (screen === "availability") return <AvailabilityScreen onBack={() => enter("baseline")} onContinue={() => enter("home")} />;
+  if (screen === "chat") return <div className="min-h-screen bg-background"><main className="mx-auto w-full max-w-3xl px-4 pb-6 pt-4 sm:px-8"><TutorScreen name={name} onBack={() => enter("home")} /></main></div>;
   if (screen === "routine") return <RoutineScreen routine={routine} setRoutine={setRoutine} onBack={() => enter("availability")} onConfirm={() => enter("home")} />;
 
   return (
@@ -50,7 +51,7 @@ export function StudyApp() {
         {screen === "home" && <HomeScreen name={name} go={enter} />}
         {screen === "subjects" && <SubjectsScreen />}
         {screen === "papers" && <PapersScreen go={enter} />}
-        {screen === "tutor" && <TutorScreen name={name} />}
+        {screen === "tutor" && <ExamScreen />}
         {screen === "settings" && <SettingsScreen name={name} setName={setName} scores={scores} setScores={setScores} routine={routine} setRoutine={setRoutine} saved={showToast} signOut={() => enter("auth")} />}
       </main>
       <BottomNav current={screen} go={enter} />
@@ -117,7 +118,7 @@ function HomeScreen({ go }: { name: string; go: (s: Screen) => void }) {
   const complete = (subject: Subject) => { setRemoving(subject); window.setTimeout(() => { setDue(d => d.filter(x => x !== subject)); setRemoving(null); }, 800); };
   const topicFor: Record<Subject, string> = { Mathematics: "Matrices", Biology: "Cell structure", Physics: "Motion", Chemistry: "Bonding" };
   return <>
-    <button onClick={() => go("tutor")} className="relative w-full overflow-hidden rounded-3xl bg-primary p-5 text-left text-primary-foreground shadow-md transition-transform active:scale-[.99]"><h2 className="relative z-10 text-2xl font-black leading-tight">Master every topic before exam day</h2><p className="relative z-10 mt-2 text-sm text-primary-foreground/80">Switch on Exam Mode two weeks before your exams.</p><span className="relative z-10 mt-4 flex items-center gap-2 text-sm font-extrabold">Open AI Tutor <ArrowRight className="size-4"/></span><span className="absolute -right-10 -top-14 size-36 rounded-full bg-primary-foreground/10"/><span className="absolute -bottom-24 right-6 size-44 rounded-full bg-primary-foreground/10"/></button>
+    <button onClick={() => go("chat")} className="relative w-full overflow-hidden rounded-3xl bg-primary p-5 text-left text-primary-foreground shadow-md transition-transform active:scale-[.99]"><h2 className="relative z-10 text-2xl font-black leading-tight">Master every topic before exam day</h2><p className="relative z-10 mt-2 text-sm text-primary-foreground/80">Switch on Exam Mode two weeks before your exams.</p><span className="relative z-10 mt-4 flex items-center gap-2 text-sm font-extrabold">Open AI Tutor <ArrowRight className="size-4"/></span><span className="absolute -right-10 -top-14 size-36 rounded-full bg-primary-foreground/10"/><span className="absolute -bottom-24 right-6 size-44 rounded-full bg-primary-foreground/10"/></button>
     <h2 className="mb-3 mt-6 text-lg font-black">Due today</h2>
     <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2">{due.map(subject => { const item = subjects.find(s => s.name === subject)!; const Icon = item.icon; return <button key={subject} onClick={() => complete(subject)} className={cn("w-36 shrink-0 rounded-2xl border p-3 text-left", subjectTone[subject], removing === subject && "success-away")}><div className={cn("mb-3 grid size-9 place-items-center rounded-xl", item.color)}><Icon className="size-4"/></div><b className="block text-sm">{subject}</b><span className="text-xs opacity-70">{topicFor[subject]} · 40 min</span></button>; })}{due.length === 0 && <div className="w-full rounded-2xl bg-success-soft p-4 text-center text-sm font-bold text-primary"><Trophy className="mx-auto mb-2"/>You’re done for today!</div>}</div>
   </>;
@@ -125,13 +126,13 @@ function HomeScreen({ go }: { name: string; go: (s: Screen) => void }) {
 
 function SubjectsScreen() { const [open, setOpen] = useState<Subject | null>(null); return <><PageTitle title="Subjects" copy="Pick a subject to see ECZ syllabus topics."/><div className="mt-6 space-y-3">{subjects.map(({ name, icon: Icon, color, intro, topics }) => <div key={name} className="overflow-hidden rounded-2xl border bg-card shadow-sm"><button className="flex w-full items-center gap-4 p-5 text-left" onClick={() => setOpen(open === name ? null : name)}><span className={cn("grid size-14 shrink-0 place-items-center rounded-2xl", color)}><Icon /></span><span className="min-w-0 flex-1"><b className="text-lg">{name}</b><span className="block truncate text-sm text-muted-foreground">{intro}</span></span><span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{topics.length} topics</span></button><div className={cn("grid transition-[grid-template-rows] duration-300", open === name ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}><div className="overflow-hidden"><div className="grid grid-cols-2 gap-2 border-t p-4">{topics.map(topic => <button key={topic} className="rounded-xl bg-muted p-3 text-left text-sm font-bold hover:bg-secondary">{topic}</button>)}</div></div></div></div>)}</div></>; }
 
-function PapersScreen({ go }: { go: (s: Screen) => void }) { const [subject, setSubject] = useState<Subject>("Mathematics"); const [year, setYear] = useState(2025); return <><PageTitle title="Past Papers" copy="Practise under exam conditions, timer included."/><p className="mt-7 text-sm font-bold text-muted-foreground">Subject</p><div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-2">{subjects.map(s => <Button key={s.name} variant={subject === s.name ? "default" : "outline"} className="h-12 shrink-0 rounded-full" onClick={() => setSubject(s.name)}><s.icon/>{s.name}</Button>)}</div><p className="mt-6 text-sm font-bold text-muted-foreground">Year</p><div className="mt-3 grid grid-cols-4 gap-2">{[2018,2019,2020,2021,2022,2023,2024,2025].map(y => <Button key={y} variant={year === y ? "default" : "outline"} className="h-12 rounded-full" onClick={() => setYear(y)}>{y}</Button>)}</div><div className="mt-6 rounded-[2rem] bg-primary p-7 text-primary-foreground"><p className="opacity-75">Selected paper</p><h2 className="mt-2 text-2xl font-black">{subject} · {year}</h2><Button variant="secondary" className="mt-6 rounded-full" onClick={() => go("tutor")}>Start practice session <ArrowRight /></Button></div></>; }
+function PapersScreen({ go }: { go: (s: Screen) => void }) { const [subject, setSubject] = useState<Subject>("Mathematics"); const [year, setYear] = useState(2025); return <><PageTitle title="Past Papers" copy="Practise under exam conditions, timer included."/><p className="mt-7 text-sm font-bold text-muted-foreground">Subject</p><div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-2">{subjects.map(s => <Button key={s.name} variant={subject === s.name ? "default" : "outline"} className="h-12 shrink-0 rounded-full" onClick={() => setSubject(s.name)}><s.icon/>{s.name}</Button>)}</div><p className="mt-6 text-sm font-bold text-muted-foreground">Year</p><div className="mt-3 grid grid-cols-4 gap-2">{[2018,2019,2020,2021,2022,2023,2024,2025].map(y => <Button key={y} variant={year === y ? "default" : "outline"} className="h-12 rounded-full" onClick={() => setYear(y)}>{y}</Button>)}</div><div className="mt-6 rounded-[2rem] bg-primary p-7 text-primary-foreground"><p className="opacity-75">Selected paper</p><h2 className="mt-2 text-2xl font-black">{subject} · {year}</h2><Button variant="secondary" className="mt-6 rounded-full" onClick={() => go("chat")}>Start practice session <ArrowRight /></Button></div></>; }
 
-function TutorScreen(_: { name: string }) {
-  const [exam, setExam] = useState(false); const [examOpen, setExamOpen] = useState(false); const [phase, setPhase] = useState<"topic"|"subtopic"|"summary"|"test"|"done">("topic"); const [topic, setTopic] = useState(""); const [messages, setMessages] = useState<{ role: "user"|"assistant"; text: string }[]>([]); const [clearing, setClearing] = useState(false); const inputRef = useRef<HTMLTextAreaElement>(null);
+function TutorScreen({ onBack }: { name: string; onBack: () => void }) {
+  const [phase, setPhase] = useState<"topic"|"subtopic"|"summary"|"test"|"done">("topic"); const [topic, setTopic] = useState(""); const [messages, setMessages] = useState<{ role: "user"|"assistant"; text: string }[]>([]); const [clearing, setClearing] = useState(false); const inputRef = useRef<HTMLTextAreaElement>(null);
   const submit = (text: string) => { if (!text.trim()) return; setTopic(text); setMessages([{ role: "user", text }, { role: "assistant", text: "That sounds closest to **Matrices** in the official Mathematics syllabus. Which part are you currently learning?" }]); setPhase("subtopic"); };
   const transition = () => { setClearing(true); window.setTimeout(() => { setMessages([{ role: "assistant", text: "Great work on Mathematics. Let’s move on to **Cell structure in Biology**." }]); setPhase("done"); setClearing(false); }, 350); };
-  return <div className="flex min-h-[calc(100vh-8rem)] flex-col"><header className="flex items-center justify-between gap-4"><h1 className="text-xl font-black">AI Tutor</h1><label className="flex shrink-0 items-center gap-2 text-xs font-bold text-primary">Exam<Switch checked={exam} onCheckedChange={(v) => { setExam(v); if (v) setExamOpen(true); }} className="shadow-[0_0_16px_color-mix(in_oklab,var(--primary)_45%,transparent)]"/></label></header>
+  return <div className="flex min-h-[calc(100vh-2.5rem)] flex-col"><header className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={onBack} aria-label="Back to home"><ChevronLeft /></Button><h1 className="text-xl font-black">AI Tutor</h1></header>
     <div className="mt-4 flex flex-1 flex-col overflow-hidden rounded-2xl border bg-card"><Conversation className="min-h-[380px]"><ConversationContent className={cn("gap-4 p-4", clearing && "clean-slate")}>
       {messages.length === 0 && <div className="my-auto"><h2 className="text-lg font-black">What topic did you learn recently in Mathematics or Biology?</h2><p className="mt-1 text-sm text-muted-foreground">Type it below or tap a suggestion.</p><div className="mt-4 flex flex-wrap gap-2">{["Matrices", "Trigonometry", "Cell structure"].map(x => <Button key={x} size="sm" variant="secondary" className="rounded-full" onClick={() => submit(`I learnt ${x}`)}>{x}</Button>)}</div></div>}
       {messages.map((m, i) => <Message from={m.role} key={`${m.role}-${i}`}><MessageContent className={m.role === "user" ? "bg-primary text-primary-foreground" : ""}><MessageResponse>{m.text}</MessageResponse></MessageContent></Message>)}
@@ -142,7 +143,6 @@ function TutorScreen(_: { name: string }) {
       <ConversationScrollButton />
     </ConversationContent></Conversation>
     <div className="border-t p-3"><PromptInput onSubmit={(m) => submit(m.text)} className="rounded-xl shadow-none"><PromptInputTextarea ref={inputRef} placeholder={topic ? "Write your answer…" : "I learnt…"} className="min-h-16"/><PromptInputFooter className="justify-end"><PromptInputSubmit /></PromptInputFooter></PromptInput></div></div>
-    <ExamDialog open={examOpen} setOpen={setExamOpen} />
   </div>;
 }
 
@@ -167,4 +167,51 @@ function SettingsScreen({ name, setName, scores, setScores, routine, setRoutine,
 }
 
 function PageTitle({ title, copy }: { title: string; copy: string }) { return <div><h1 className="text-3xl font-black">{title}</h1><p className="mt-2 text-muted-foreground">{copy}</p></div>; }
-function BottomNav({ current, go }: { current: Screen; go: (s: Screen) => void }) { const nav = [{s:"home" as Screen,l:"Home",i:Home},{s:"subjects" as Screen,l:"Subjects",i:BookOpen},{s:"papers" as Screen,l:"Papers",i:FileText},{s:"tutor" as Screen,l:"Tutor",i:GraduationCap},{s:"settings" as Screen,l:"Me",i:UserRound}]; return <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur"><div className="mx-auto grid h-16 max-w-3xl grid-cols-5">{nav.map(({s,l,i:Icon}) => <button key={s} onClick={()=>go(s)} className={cn("flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors",current===s?"text-primary":"text-muted-foreground")}><Icon className="size-5"/><span>{l}</span></button>)}</div></nav>; }
+function BottomNav({ current, go }: { current: Screen; go: (s: Screen) => void }) { const nav = [{s:"home" as Screen,l:"Home",i:Home},{s:"subjects" as Screen,l:"Subjects",i:BookOpen},{s:"papers" as Screen,l:"Papers",i:FileText},{s:"tutor" as Screen,l:"Exam",i:Target},{s:"settings" as Screen,l:"Me",i:UserRound}]; return <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur"><div className="mx-auto grid h-16 max-w-3xl grid-cols-5">{nav.map(({s,l,i:Icon}) => <button key={s} onClick={()=>go(s)} className={cn("flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors",current===s?"text-primary":"text-muted-foreground")}><Icon className="size-5"/><span>{l}</span></button>)}</div></nav>; }
+const highYield: Record<Subject, string[]> = {
+  Mathematics: ["Sets", "Algebra", "Matrices", "Trigonometry"],
+  Biology: ["Cell structure", "Nutrition", "Respiration"],
+  Physics: ["Motion", "Forces", "Energy"],
+  Chemistry: ["Atomic structure", "Bonding", "Acids and bases"],
+};
+function ExamScreen() {
+  const [subject, setSubject] = useState<Subject | null>(null);
+  const [started, setStarted] = useState(false);
+  const [topicIdx, setTopicIdx] = useState(0);
+  const [q, setQ] = useState(0);
+  const [feedback, setFeedback] = useState<"" | "right" | "wrong">("");
+  const [done, setDone] = useState<string[]>([]);
+  const reset = () => { setSubject(null); setStarted(false); setTopicIdx(0); setQ(0); setFeedback(""); setDone([]); };
+  if (!subject) return <><PageTitle title="Exam Mode" copy="Pick a subject to review its high-yield topics."/><div className="mt-6 space-y-3">{subjects.map(({ name, icon: Icon, color }) => <button key={name} onClick={() => setSubject(name)} className="flex w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left shadow-sm transition-colors hover:bg-muted"><span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", color)}><Icon /></span><span className="flex-1"><b>{name}</b><span className="block text-sm text-muted-foreground">{highYield[name].length} high-yield topics covered</span></span><ChevronRight className="text-muted-foreground"/></button>)}</div></>;
+  const topics = highYield[subject];
+  if (!started) return <><div className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><h1 className="text-2xl font-black">{subject}</h1></div><p className="mt-2 text-sm text-muted-foreground">High-yield topics you have covered so far. You'll get 5 questions per topic.</p><div className="mt-5 space-y-2">{topics.map((t, i) => <div key={t} className="flex items-center gap-3 rounded-xl border bg-card p-4"><span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-black text-primary">{i + 1}</span><b className="text-sm">{t}</b></div>)}</div><Button className="mt-6 h-12 w-full rounded-xl" onClick={() => setStarted(true)}>Continue <ArrowRight/></Button></>;
+  const finished = done.length === topics.length;
+  const topic = topics[topicIdx];
+  const correct = (q + topicIdx) % 4;
+  const answer = (i: number) => {
+    if (i !== correct) return setFeedback("wrong");
+    setFeedback("right");
+    window.setTimeout(() => {
+      setFeedback("");
+      if (q < 4) return setQ(q + 1);
+      setDone(d => [...d, topic]); setQ(0);
+      if (topicIdx < topics.length - 1) setTopicIdx(topicIdx + 1);
+    }, 600);
+  };
+  return <div className="flex min-h-[calc(100vh-8rem)] flex-col">
+    <div className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><h1 className="text-xl font-black">{subject} review</h1></div>
+    <div className="mt-4 flex flex-1 gap-3">
+      <aside className="w-28 shrink-0 space-y-1 sm:w-44">{topics.map((t, i) => <div key={t} className={cn("flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold sm:text-sm", i === topicIdx && !finished ? "bg-secondary text-primary" : "text-muted-foreground")}>{done.includes(t) ? <Check className="size-4 shrink-0 text-primary"/> : <span className="size-4 shrink-0 rounded-full border"/>}<span className="truncate">{t}</span></div>)}</aside>
+      <section className="flex-1 rounded-2xl border bg-card p-4">
+        {finished ? <div className="py-10 text-center text-primary"><Trophy className="mx-auto size-8"/><b className="mt-3 block text-lg">All {subject} topics reviewed</b><Button variant="outline" className="mt-4 rounded-full" onClick={reset}>Pick another subject</Button></div> : <div key={`${topic}-${q}`} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <p className="text-xs font-black uppercase text-primary">{topic} · Question {q + 1} of 5</p>
+          <div className="mt-2 flex gap-1">{[0,1,2,3,4].map(n => <span key={n} className={cn("h-1.5 flex-1 rounded-full", n < q ? "bg-primary" : n === q ? "bg-primary/40" : "bg-muted")}/>)}</div>
+          <p className="mt-4 font-bold">ECZ-style question {q + 1} on {topic}. Choose the correct answer.</p>
+          <div className="mt-4 grid gap-2">{["A", "B", "C", "D"].map((o, i) => <Button key={o} variant="outline" className="h-11 justify-start rounded-xl" onClick={() => answer(i)}>{o}. Option {o}</Button>)}</div>
+          {feedback === "wrong" && <p className="mt-3 rounded-xl bg-muted p-3 text-sm">Not quite. Think about the key rule for {topic} and try again.</p>}
+          {feedback === "right" && <p className="mt-3 rounded-xl bg-success-soft p-3 text-sm font-bold text-primary">Correct!</p>}
+        </div>}
+      </section>
+    </div>
+  </div>;
+}
