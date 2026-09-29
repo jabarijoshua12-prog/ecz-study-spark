@@ -14,3 +14,9 @@
 - [ ] Simplify home banner, colored horizontal due subjects, and remove shortcut grid
 - [ ] Match the AI Tutor reference layout; use π, DNA, beaker, and graduation-hat symbols
 - [ ] Rework Me as one vertical settings list with profile, Performance Baseline, Study Rhythm, theme, and sign out
+
+## Current request
+- [ ] Make the green AI Tutor entry prominent and accessible on Home
+- [ ] Remove the small subject captions in Exam Mode and the Exam Mode note on Home
+- [ ] Refresh the existing screens with a playful, tactile, Duolingo-inspired visual language
+- [ ] Verify Home → Tutor → Home and Exam Mode on mobile
