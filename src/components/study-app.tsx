@@ -185,7 +185,7 @@ function ExamScreen() {
   const topics = highYield[subject];
   if (!started) return <><div className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><h1 className="text-2xl font-black">{subject}</h1></div><p className="mt-2 text-sm text-muted-foreground">High-yield topics you have covered so far. You'll get 5 questions per topic.</p><div className="mt-5 space-y-2">{topics.map((t, i) => <div key={t} className="flex items-center gap-3 rounded-xl border bg-card p-4"><span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-black text-primary">{i + 1}</span><b className="text-sm">{t}</b></div>)}</div><Button className="mt-6 h-12 w-full rounded-xl" onClick={() => setStarted(true)}>Continue <ArrowRight/></Button></>;
   const finished = done.length === topics.length;
-  const topic = topics[topicIdx];
+  const topic = topics[topicIdx] ?? "";
   const correct = (q + topicIdx) % 4;
   const answer = (i: number) => {
     if (i !== correct) return setFeedback("wrong");
