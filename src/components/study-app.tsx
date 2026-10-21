@@ -118,9 +118,9 @@ function HomeScreen({ go }: { name: string; go: (s: Screen) => void }) {
   const complete = (subject: Subject) => { setRemoving(subject); window.setTimeout(() => { setDue(d => d.filter(x => x !== subject)); setRemoving(null); }, 800); };
   const topicFor: Record<Subject, string> = { Mathematics: "Matrices", Biology: "Cell structure", Physics: "Motion", Chemistry: "Bonding" };
   return <>
-     <Button onClick={() => go("chat")} className="flex h-auto min-h-40 w-full items-center justify-between whitespace-normal rounded-2xl p-5 text-left shadow-[0_6px_0_var(--primary-edge)] active:translate-y-1.5 active:shadow-none sm:p-7"><span className="min-w-0 flex-1"><span className="mb-2 flex items-center gap-2 text-sm font-black uppercase"><GraduationCap className="size-5"/> AI Tutor</span><span className="block max-w-md text-2xl font-black leading-tight sm:text-3xl">Master every topic before exam day</span></span><span className="ml-3 grid size-10 shrink-0 place-items-center rounded-full bg-primary-foreground/20"><ArrowRight className="size-5"/></span></Button>
-    <h2 className="mb-3 mt-6 text-lg font-black">Due today</h2>
-     <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-3">{due.map(subject => { const item = subjects.find(s => s.name === subject); if (!item) return null; const Icon = item.icon; return <Button key={subject} variant="outline" onClick={() => complete(subject)} className={cn("h-auto w-36 shrink-0 flex-col items-start whitespace-normal rounded-2xl p-3 text-left active:translate-y-1", subjectTone[subject], removing === subject && "success-away")}><span className={cn("mb-3 grid size-9 place-items-center rounded-xl", item.color)}><Icon className="size-4"/></span><b className="block text-sm">{subject}</b><span className="text-xs font-semibold opacity-70">{topicFor[subject]} · 40 min</span></Button>; })}{due.length === 0 && <div className="w-full rounded-2xl bg-success-soft p-4 text-center text-sm font-bold text-primary"><Trophy className="mx-auto mb-2"/>You’re done for today!</div>}</div>
+     <Button variant="brand" onClick={() => go("chat")} className="flex h-auto min-h-40 w-full items-end justify-between whitespace-normal rounded-3xl p-5 text-left active:translate-y-1.5 sm:p-7"><span className="min-w-0 flex-1"><span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-brand-foreground/20 px-2.5 py-1 text-xs font-bold"><GraduationCap className="size-4"/> AI Tutor</span><span className="block max-w-md text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">Master every topic before exam day</span></span><span className="ml-3 grid size-11 shrink-0 place-items-center rounded-full bg-brand-foreground text-brand"><ArrowRight className="size-5"/></span></Button>
+    <h2 className="mb-3 mt-7 text-lg font-extrabold tracking-tight">Due today</h2>
+     <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-3">{due.map(subject => { const item = subjects.find(s => s.name === subject); if (!item) return null; const Icon = item.icon; return <Button key={subject} variant="outline" onClick={() => complete(subject)} className={cn("h-auto w-36 shrink-0 flex-col items-start whitespace-normal rounded-2xl border-2 p-3 text-left active:translate-y-1", subjectTone[subject], removing === subject && "success-away")}><span className={cn("mb-3 grid size-9 place-items-center rounded-xl", item.color)}><Icon className="size-4"/></span><b className="block text-sm">{subject}</b><span className="text-xs font-semibold opacity-70">{topicFor[subject]} · 40 min</span></Button>; })}{due.length === 0 && <div className="w-full rounded-2xl bg-success-soft p-4 text-center text-sm font-bold text-success"><Trophy className="mx-auto mb-2"/>You’re done for today!</div>}</div>
   </>;
 }
 
@@ -165,8 +165,8 @@ function SettingsScreen({ name, setName, scores, setScores, routine, setRoutine,
   </div></>;
 }
 
-function PageTitle({ title, copy }: { title: string; copy: string }) { return <div><h1 className="text-3xl font-black">{title}</h1><p className="mt-2 text-muted-foreground">{copy}</p></div>; }
-function BottomNav({ current, go }: { current: Screen; go: (s: Screen) => void }) { const nav = [{s:"home" as Screen,l:"Home",i:Home},{s:"subjects" as Screen,l:"Subjects",i:BookOpen},{s:"papers" as Screen,l:"Papers",i:FileText},{s:"tutor" as Screen,l:"Exam",i:Target},{s:"settings" as Screen,l:"Me",i:UserRound}]; return <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur"><div className="mx-auto grid h-16 max-w-3xl grid-cols-5">{nav.map(({s,l,i:Icon}) => <button key={s} onClick={()=>go(s)} className={cn("flex flex-col items-center justify-center gap-1 text-xs font-bold transition-colors",current===s?"text-primary":"text-muted-foreground")}><Icon className="size-5"/><span>{l}</span></button>)}</div></nav>; }
+function PageTitle({ title, copy }: { title: string; copy: string }) { return <div><h1 className="text-3xl font-extrabold tracking-tight">{title}</h1><p className="mt-2 text-sm text-muted-foreground">{copy}</p></div>; }
+function BottomNav({ current, go }: { current: Screen; go: (s: Screen) => void }) { const nav = [{s:"home" as Screen,l:"Home",i:Home},{s:"subjects" as Screen,l:"Subjects",i:BookOpen},{s:"papers" as Screen,l:"Papers",i:FileText},{s:"tutor" as Screen,l:"Exam",i:Target},{s:"settings" as Screen,l:"Me",i:UserRound}]; return <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur"><div className="mx-auto grid h-16 max-w-3xl grid-cols-5 px-2">{nav.map(({s,l,i:Icon}) => <button key={s} onClick={()=>go(s)} aria-current={current===s ? "page" : undefined} className={cn("flex flex-col items-center justify-center gap-1 text-[11px] font-bold transition-colors",current===s?"text-foreground":"text-muted-foreground")}><span className={cn("grid h-7 w-12 place-items-center rounded-full transition-colors", current===s && "bg-secondary")}><Icon className="size-5" strokeWidth={current===s ? 2.5 : 2}/></span><span>{l}</span></button>)}</div></nav>; }
 const highYield: Record<Subject, string[]> = {
   Mathematics: ["Sets", "Algebra", "Matrices", "Trigonometry"],
   Biology: ["Cell structure", "Nutrition", "Respiration"],
@@ -178,38 +178,44 @@ function ExamScreen() {
   const [started, setStarted] = useState(false);
   const [topicIdx, setTopicIdx] = useState(0);
   const [q, setQ] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"" | "right" | "wrong">("");
   const [done, setDone] = useState<string[]>([]);
-  const reset = () => { setSubject(null); setStarted(false); setTopicIdx(0); setQ(0); setFeedback(""); setDone([]); };
-   if (!subject) return <><h1 className="text-3xl font-black">Exam Mode</h1><div className="mt-6 space-y-3">{subjects.map(({ name, icon: Icon, color }) => <Button key={name} variant="outline" onClick={() => setSubject(name)} className="flex h-20 w-full justify-start gap-4 rounded-2xl px-4 text-left text-lg"><span className={cn("grid size-12 shrink-0 place-items-center rounded-xl", color)}><Icon className="size-6" /></span><span className="flex-1">{name}</span><ChevronRight className="text-muted-foreground"/></Button>)}</div></>;
+  const reset = () => { setSubject(null); setStarted(false); setTopicIdx(0); setQ(0); setPicked(null); setFeedback(""); setDone([]); };
+  if (!subject) return <><h1 className="text-3xl font-extrabold tracking-tight">Exam Mode</h1><div className="mt-6 grid grid-cols-2 gap-3">{subjects.map(({ name, icon: Icon, color }) => <Button key={name} variant="outline" onClick={() => setSubject(name)} className="h-36 flex-col items-start justify-between whitespace-normal rounded-2xl p-4 text-left text-base active:translate-y-1"><span className={cn("grid size-12 place-items-center rounded-2xl", color)}><Icon className="size-6" /></span><span>{name}</span></Button>)}</div></>;
   const topics = highYield[subject];
-  if (!started) return <><div className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><h1 className="text-2xl font-black">{subject}</h1></div><p className="mt-2 text-sm text-muted-foreground">High-yield topics you have covered so far. You'll get 5 questions per topic.</p><div className="mt-5 space-y-2">{topics.map((t, i) => <div key={t} className="flex items-center gap-3 rounded-xl border bg-card p-4"><span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-black text-primary">{i + 1}</span><b className="text-sm">{t}</b></div>)}</div><Button className="mt-6 h-12 w-full rounded-xl" onClick={() => setStarted(true)}>Continue <ArrowRight/></Button></>;
+  const meta = subjects.find(s => s.name === subject);
+  const SubjectIcon = meta?.icon ?? Pi;
+  if (!started) return <><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><div className="mt-3 flex items-center gap-3"><span className={cn("grid size-12 place-items-center rounded-2xl", meta?.color)}><SubjectIcon className="size-6"/></span><h1 className="text-2xl font-extrabold tracking-tight">{subject}</h1></div><ol className="relative mt-6 space-y-3 before:absolute before:bottom-6 before:left-[1.375rem] before:top-6 before:w-0.5 before:bg-border">{topics.map((t, i) => <li key={t} className="relative flex items-center gap-4 rounded-2xl border-2 bg-card p-3 shadow-[0_3px_0_var(--border)]"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-extrabold text-primary-foreground">{i + 1}</span><b className="text-sm">{t}</b></li>)}</ol><Button className="mt-8 h-12 w-full text-base" onClick={() => setStarted(true)}>Continue</Button></>;
   const finished = done.length === topics.length;
   const topic = topics[topicIdx] ?? "";
   const correct = (q + topicIdx) % 4;
-  const answer = (i: number) => {
-    if (i !== correct) return setFeedback("wrong");
-    setFeedback("right");
-    window.setTimeout(() => {
-      setFeedback("");
-      if (q < 4) return setQ(q + 1);
-      setDone(d => [...d, topic]); setQ(0);
-      if (topicIdx < topics.length - 1) setTopicIdx(topicIdx + 1);
-    }, 600);
+  const check = () => { if (picked === null) return; setFeedback(picked === correct ? "right" : "wrong"); };
+  const next = () => {
+    if (feedback === "wrong") { setFeedback(""); setPicked(null); return; }
+    setFeedback(""); setPicked(null);
+    if (q < 4) return setQ(q + 1);
+    setDone(d => [...d, topic]); setQ(0);
+    if (topicIdx < topics.length - 1) setTopicIdx(topicIdx + 1);
   };
-  return <div className="flex min-h-[calc(100vh-8rem)] flex-col">
-    <div className="flex items-center gap-2"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><h1 className="text-xl font-black">{subject} review</h1></div>
-    <div className="mt-4 flex flex-1 gap-3">
-      <aside className="w-28 shrink-0 space-y-1 sm:w-44">{topics.map((t, i) => <div key={t} className={cn("flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold sm:text-sm", i === topicIdx && !finished ? "bg-secondary text-primary" : "text-muted-foreground")}>{done.includes(t) ? <Check className="size-4 shrink-0 text-primary"/> : <span className="size-4 shrink-0 rounded-full border"/>}<span className="truncate">{t}</span></div>)}</aside>
-      <section className="flex-1 rounded-2xl border bg-card p-4">
-        {finished ? <div className="py-10 text-center text-primary"><Trophy className="mx-auto size-8"/><b className="mt-3 block text-lg">All {subject} topics reviewed</b><Button variant="outline" className="mt-4 rounded-full" onClick={reset}>Pick another subject</Button></div> : <div key={`${topic}-${q}`} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <p className="text-xs font-black uppercase text-primary">{topic} · Question {q + 1} of 5</p>
-          <div className="mt-2 flex gap-1">{[0,1,2,3,4].map(n => <span key={n} className={cn("h-1.5 flex-1 rounded-full", n < q ? "bg-primary" : n === q ? "bg-primary/40" : "bg-muted")}/>)}</div>
-          <p className="mt-4 font-bold">ECZ-style question {q + 1} on {topic}. Choose the correct answer.</p>
-          <div className="mt-4 grid gap-2">{["A", "B", "C", "D"].map((o, i) => <Button key={o} variant="outline" className="h-11 justify-start rounded-xl" onClick={() => answer(i)}>{o}. Option {o}</Button>)}</div>
-          {feedback === "wrong" && <p className="mt-3 rounded-xl bg-muted p-3 text-sm">Not quite. Think about the key rule for {topic} and try again.</p>}
-          {feedback === "right" && <p className="mt-3 rounded-xl bg-success-soft p-3 text-sm font-bold text-primary">Correct!</p>}
-        </div>}
+  const tracker = topics.map((t, i) => <div key={t} className={cn("flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold sm:text-sm", i === topicIdx && !finished ? "bg-secondary text-foreground" : "text-muted-foreground")}>{done.includes(t) ? <span className="grid size-5 place-items-center rounded-full bg-success text-primary-foreground"><Check className="size-3"/></span> : <span className="size-5 rounded-full border-2"/>}<span className="truncate">{t}</span></div>);
+  return <div className="flex min-h-[calc(100vh-9rem)] flex-col">
+    <div className="flex items-center gap-3"><Button size="icon" variant="ghost" onClick={reset} aria-label="Back"><ChevronLeft /></Button><div className="flex flex-1 gap-1.5">{[0,1,2,3,4].map(n => <span key={n} className={cn("h-2.5 flex-1 rounded-full transition-colors duration-300", finished || n < q ? "bg-success" : n === q ? "bg-primary" : "bg-muted")}/>)}</div></div>
+    <div className="-mx-5 mt-4 flex gap-1 overflow-x-auto px-5 sm:hidden">{tracker}</div>
+    <div className="mt-4 flex flex-1 gap-6">
+      <aside className="hidden w-48 shrink-0 space-y-1 sm:block">{tracker}</aside>
+      <section className="flex flex-1 flex-col">
+        {finished ? <div className="my-auto py-10 text-center"><span className="mx-auto grid size-16 place-items-center rounded-full bg-success-soft text-success"><Trophy className="size-8"/></span><h2 className="mt-4 text-xl font-extrabold">All {subject} topics reviewed</h2><Button className="mt-6 h-12 w-full" onClick={reset}>Pick another subject</Button></div> : <>
+          <div key={`${topic}-${q}`} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{topic} · {q + 1} of 5</p>
+            <h2 className="mt-3 text-xl font-extrabold leading-snug">ECZ-style question {q + 1} on {topic}. Choose the correct answer.</h2>
+            <div className="mt-6 grid gap-3">{["A", "B", "C", "D"].map((o, i) => { const state = feedback && picked === i ? (feedback === "right" ? "border-success bg-success-soft" : "border-wrong bg-wrong-soft") : picked === i ? "border-primary bg-secondary" : ""; return <Button key={o} variant="outline" disabled={!!feedback} onClick={() => setPicked(i)} className={cn("h-14 justify-start rounded-2xl px-4 text-base font-bold disabled:opacity-100", state)}><span className="grid size-7 place-items-center rounded-lg border-2 text-xs">{o}</span>Option {o}</Button>; })}</div>
+          </div>
+          <div className="mt-auto pt-6">
+            {feedback && <div className={cn("mb-3 animate-in fade-in slide-in-from-bottom-3 rounded-2xl p-4 duration-300", feedback === "right" ? "bg-success-soft" : "bg-wrong-soft")}><b className={feedback === "right" ? "text-success" : "text-wrong"}>{feedback === "right" ? "Correct!" : "Not quite"}</b>{feedback === "wrong" && <p className="mt-1 text-sm">Think about the key rule for {topic}, then try again.</p>}</div>}
+            {feedback ? <Button variant={feedback === "right" ? "brand" : "default"} className="h-12 w-full text-base" onClick={next}>{feedback === "right" ? "Continue" : "Try again"}</Button> : <Button className="h-12 w-full text-base" disabled={picked === null} onClick={check}>Check</Button>}
+          </div>
+        </>}
       </section>
     </div>
   </div>;
