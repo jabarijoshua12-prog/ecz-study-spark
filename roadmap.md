@@ -16,7 +16,7 @@
 - [ ] Rework Me as one vertical settings list with profile, Performance Baseline, Study Rhythm, theme, and sign out
 
 ## Current request
-- [ ] Make the green AI Tutor entry prominent and accessible on Home
-- [ ] Remove the small subject captions in Exam Mode and the Exam Mode note on Home
-- [ ] Refresh the existing screens with a playful, tactile, Duolingo-inspired visual language
+- [x] Make the green AI Tutor entry prominent and accessible on Home
+- [x] Remove the small subject captions in Exam Mode and the Exam Mode note on Home
+- [ ] ~~Duolingo-inspired look~~ replaced by: Brilliant-style UI/UX (clean white, dark tactile buttons, one-question-per-screen practice, top progress bar, bottom Check button)
 - [ ] Verify Home → Tutor → Home and Exam Mode on mobile
