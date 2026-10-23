@@ -178,7 +178,7 @@ const kinetic: Template = (r) => {
   };
 };
 const ohmV: Template = (r) => {
-  const I = int(r, 1, 6), R = int(r, 2, 12), V = I * R;
+  const I = int(r, 2, 6), R = int(r, 2, 12), V = I * R;
   return {
     prompt: pick(r, [`A current of ${I} A flows through a ${R} Ω resistor. Find the potential difference across it.`, `What voltage drives ${I} A through a ${R} Ω resistor?`]),
     correct: `${V} V`,
@@ -422,6 +422,12 @@ export function generateQuestion(topicId: string, seed: number): Question {
   const d = pick(r, topic.templates)(r);
   const wrong: string[] = [];
   for (const w of d.wrong.map(String)) if (w !== d.correct && !wrong.includes(w)) wrong.push(w);
+  // Safety net: pad numeric answers with nearby values so there are always 4 options.
+  const num = d.correct.match(/^(-?\d+(?:\.\d+)?)(.*)$/);
+  for (let k = 2; num && wrong.length < 3; k++) {
+    const w = `${Number(num[1]) + (k % 2 ? -1 : 1) * Math.floor(k / 2) * 3}${num[2]}`;
+    if (w !== d.correct && !wrong.includes(w)) wrong.push(w);
+  }
   const options = shuffle(r, [d.correct, ...wrong.slice(0, 3)]);
   return {
     id: `${topicId}-${seed}`,
