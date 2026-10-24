@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useStudyStore, type Session } from "@/hooks/use-study-store";
 import { SUBJECT_NAMES, dayKey, nextStreak, XP_PER_CORRECT, type SubjectId } from "@/lib/study-logic";
@@ -106,7 +106,7 @@ export function StudyApp() {
     }
   };
 
-  let content: React.ReactNode = null;
+  let content: ReactNode = null;
   let tab: Tab | null = null;
 
   if (view.name === "quiz") {

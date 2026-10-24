@@ -4,10 +4,10 @@ import { StudyApp } from "@/components/study-app";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ECZ Study — Your personal study plan" },
-      { name: "description", content: "Plan each study week, practise ECZ papers, and learn with a guided AI tutor." },
-      { property: "og:title", content: "ECZ Study — Your personal study plan" },
-      { property: "og:description", content: "Plan each study week, practise ECZ papers, and learn with a guided AI tutor." },
+      { title: "ECZ Study — Daily exam drills" },
+      { name: "description", content: "Two subjects a day, 15 past-paper style questions each. Practise ECZ Maths, Physics, Chemistry and Biology." },
+      { property: "og:title", content: "ECZ Study — Daily exam drills" },
+      { property: "og:description", content: "Two subjects a day, 15 past-paper style questions each. Practise ECZ Maths, Physics, Chemistry and Biology." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -15,7 +15,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return <StudyApp />;
 }
