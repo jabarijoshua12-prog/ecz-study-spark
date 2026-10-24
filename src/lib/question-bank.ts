@@ -294,9 +294,9 @@ const periodic: Template = (r) => {
 };
 const ALKANES = ["", "methane", "ethane", "propane", "butane", "pentane", "hexane"];
 const organic: Template = (r) => {
-  const n = int(r, 2, 6), h = 2 * n + 2;
+  const n = int(r, 2, 6), h = 2 * n + 2, name = ALKANES[n] ?? "ethane";
   return {
-    prompt: pick(r, [`What is the molecular formula of ${ALKANES[n]}?`, `${cap(ALKANES[n])} is an alkane with ${n} carbon atoms. What is its molecular formula?`]),
+    prompt: pick(r, [`What is the molecular formula of ${name}?`, `${cap(name)} is an alkane with ${n} carbon atoms. What is its molecular formula?`]),
     correct: alkane(n, h),
     wrong: [alkane(n, 2 * n), alkane(n, 2 * n - 2), alkane(n + 1, h), alkane(n - 1, h)],
     hint: "Alkanes follow the general formula CₙH₂ₙ₊₂.",

@@ -39,7 +39,7 @@ export function QuizScreen({ session, onChange, onExit, onFinish }: { session: S
   }, [q?.id]);
 
   const check = () => {
-    if (selected === null || phase !== "idle") return;
+    if (!q || selected === null || phase !== "idle") return;
     setPhase("checking");
     timer.current = window.setTimeout(() => {
       if (selected === q.answer) {
