@@ -29,8 +29,8 @@ export type Topic = { id: string; subject: SubjectId; name: string; templates: T
 
 const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const SUB = "₀₁₂₃₄₅₆₇₈₉";
-const sup = (n: number) => String(n).replace(/\d/g, (d) => SUP[Number(d)]).replace("-", "⁻");
-const sub = (n: number) => String(n).replace(/\d/g, (d) => SUB[Number(d)]);
+const sup = (n: number) => String(n).replace(/\d/g, (d) => SUP[Number(d)] ?? d).replace("-", "⁻");
+const sub = (n: number) => String(n).replace(/\d/g, (d) => SUB[Number(d)] ?? d);
 const alkane = (c: number, h: number) => `C${c === 1 ? "" : sub(c)}H${sub(h)}`;
 const ROMAN = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 const units = (unit: string, values: number[]) => values.map((v) => `${v} ${unit}`);
@@ -294,9 +294,9 @@ const periodic: Template = (r) => {
 };
 const ALKANES = ["", "methane", "ethane", "propane", "butane", "pentane", "hexane"];
 const organic: Template = (r) => {
-  const n = int(r, 2, 6), h = 2 * n + 2;
+  const n = int(r, 2, 6), h = 2 * n + 2, name = ALKANES[n] ?? "ethane";
   return {
-    prompt: pick(r, [`What is the molecular formula of ${ALKANES[n]}?`, `${cap(ALKANES[n])} is an alkane with ${n} carbon atoms. What is its molecular formula?`]),
+    prompt: pick(r, [`What is the molecular formula of ${name}?`, `${cap(name)} is an alkane with ${n} carbon atoms. What is its molecular formula?`]),
     correct: alkane(n, h),
     wrong: [alkane(n, 2 * n), alkane(n, 2 * n - 2), alkane(n + 1, h), alkane(n - 1, h)],
     hint: "Alkanes follow the general formula CₙH₂ₙ₊₂.",
@@ -377,7 +377,7 @@ const foodChains: Template = (r) => {
   const chain = pick(r, CHAINS), i = int(r, 0, 3);
   return {
     prompt: `In the food chain ${chain.join(" → ")}, which organism is the ${ROLES[i]}?`,
-    correct: chain[i],
+    correct: chain[i]!,
     wrong: shuffle(r, chain.filter((_, k) => k !== i)),
     hint: "The first organism is the producer. Count along the arrows.",
     steps: ["Position 1 = producer, 2 = primary, 3 = secondary, 4 = tertiary consumer", `Position ${i + 1} is ${chain[i]}.`],
@@ -418,6 +418,7 @@ export const topicSubject = (id: string) => TOPIC_BY_ID[id]?.subject;
 
 export function generateQuestion(topicId: string, seed: number): Question {
   const topic = TOPIC_BY_ID[topicId];
+  if (!topic) throw new Error(`Unknown topic ${topicId}`);
   const r = mulberry32(seed);
   const d = pick(r, topic.templates)(r);
   const wrong: string[] = [];

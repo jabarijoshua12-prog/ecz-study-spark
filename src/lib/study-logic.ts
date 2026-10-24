@@ -36,7 +36,7 @@ export function buildRoutine(days: readonly Day[], subjects: readonly SubjectId[
   const routine: Routine = {};
   const perDay = Math.min(SUBJECTS_PER_DAY, subjects.length);
   DAYS.filter((d) => days.includes(d)).forEach((day, i) => {
-    routine[day] = Array.from({ length: perDay }, (_, k) => subjects[(i * perDay + k) % subjects.length]);
+    routine[day] = Array.from({ length: perDay }, (_, k) => subjects[(i * perDay + k) % subjects.length]!);
   });
   return routine;
 }
@@ -59,13 +59,13 @@ export function mulberry32(seed: number): Rng {
 }
 
 export const int = (r: Rng, min: number, max: number) => Math.floor(r() * (max - min + 1)) + min;
-export const pick = <T,>(r: Rng, arr: readonly T[]): T => arr[Math.floor(r() * arr.length)];
+export const pick = <T,>(r: Rng, arr: readonly T[]): T => arr[Math.floor(r() * arr.length)]!;
 
 export function shuffle<T>(r: Rng, arr: readonly T[]): T[] {
   const out = [...arr];
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(r() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
+    [out[i], out[j]] = [out[j]!, out[i]!];
   }
   return out;
 }
@@ -80,7 +80,7 @@ export function dayKey(d: Date): string {
 }
 
 export function weekday(d: Date): Day {
-  return DAYS[(d.getDay() + 6) % 7];
+  return DAYS[(d.getDay() + 6) % 7]!;
 }
 
 /** Today if it is a study day, otherwise the next one. */
@@ -99,7 +99,7 @@ export function topicsForDay(topicIds: readonly string[], key: string, count = T
   let h = 0;
   for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   const start = h % topicIds.length;
-  return Array.from({ length: Math.min(count, topicIds.length) }, (_, i) => topicIds[(start + i) % topicIds.length]);
+  return Array.from({ length: Math.min(count, topicIds.length) }, (_, i) => topicIds[(start + i) % topicIds.length]!);
 }
 
 export function nextStreak(streak: number, last: string | null, today: string): number {
