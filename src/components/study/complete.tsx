@@ -28,7 +28,7 @@ export function CompleteScreen({
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, [autoMs, stages.length]);
 
-  const current = stages[stage];
+  const current = stages[stage] ?? stages[0] ?? { title: "", subtitle: "" };
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-6 py-10 text-center">

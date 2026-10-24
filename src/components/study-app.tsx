@@ -16,7 +16,7 @@ type View =
   | { name: Tab }
   | { name: "topics"; subject: SubjectId }
   | { name: "quiz"; topicId?: string }
-  | { name: "complete"; subject: SubjectId; topicId?: string; xp: number; accuracy: number; nextSubject?: SubjectId };
+  | { name: "complete"; subject: SubjectId; topicId?: string; xp: number; accuracy: number; nextSubject?: SubjectId | undefined };
 
 const seed = () => (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
 
