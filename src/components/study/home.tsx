@@ -118,7 +118,7 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", stiffness: 300, damping: 16, delay: 0.15 + 0.08 * i + 0.1 * col }}
                         className={cn(
-                          "grid size-16 place-items-center rounded-full border-2",
+                          "relative z-10 grid size-16 place-items-center rounded-full border-2",
                           nodeDone
                             ? "border-primary bg-primary text-primary-foreground shadow-[0_5px_0_var(--primary-edge)]"
                             : firstOpen
@@ -129,8 +129,8 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
                       >
                         {nodeDone ? <Check className="size-7" strokeWidth={3.2} /> : isCurrent ? <Star className="size-6" strokeWidth={2.6} /> : <Lock className="size-5" strokeWidth={2.6} />}
                       </motion.span>
-                      <span className="mt-2.5 max-w-[8.5rem] text-center text-[11px] font-extrabold leading-tight text-muted-foreground">{topicName(t)}</span>
-                      {count > 0 && !nodeDone && <span className="mt-0.5 text-[10px] font-black text-primary">{count}/{QUESTIONS_PER_TOPIC_DAILY}</span>}
+                      <span className="relative z-10 mt-2.5 max-w-[8.5rem] rounded-md bg-background px-1.5 text-center text-[11px] font-extrabold leading-tight text-muted-foreground">{topicName(t)}</span>
+                      {count > 0 && !nodeDone && <span className="relative z-10 mt-0.5 rounded-md bg-background px-1.5 text-[10px] font-black text-primary">{count}/{QUESTIONS_PER_TOPIC_DAILY}</span>}
                     </div>
                   );
                 })}
