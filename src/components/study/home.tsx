@@ -25,7 +25,7 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
   const label = allDone ? "Done for today" : session ? "Continue" : current ? `Start ${SUBJECT_NAMES[current]}` : "Start";
 
   return (
-    <div className="pb-44">
+    <div className="h-[calc(100dvh-10rem)] overflow-hidden">
       <header className="flex items-center justify-between">
         <Logo small />
         <div className="flex gap-2">
