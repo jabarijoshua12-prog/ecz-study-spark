@@ -91,7 +91,7 @@ export function AuthScreen({ onSignIn }: { onSignIn: (user: { name: string; emai
 export function GradeScreen({ value, onBack, onNext }: { value: number | null; onBack: () => void; onNext: (g: number) => void }) {
   const [grade, setGrade] = useState<number | null>(value);
   return (
-    <StepShell progress={1 / 3} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={grade === null} onClick={() => grade !== null && onNext(grade)}>Continue</Button>}>
+    <StepShell progress={1 / 2} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={grade === null} onClick={() => grade !== null && onNext(grade)}>Continue</Button>}>
       <Mascot>Which grade are you in?</Mascot>
       <div className="mt-8">
         <GradeOptions value={grade} onChange={setGrade} />
@@ -103,7 +103,7 @@ export function GradeScreen({ value, onBack, onNext }: { value: number | null; o
 export function DaysScreen({ value, onBack, onNext }: { value: Day[]; onBack: () => void; onNext: (d: Day[]) => void }) {
   const [days, setDays] = useState<Day[]>(value);
   return (
-    <StepShell progress={2 / 3} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={days.length === 0} onClick={() => onNext(days)}>Continue</Button>}>
+    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={days.length === 0} onClick={() => onNext(days)}>Let's go</Button>}>
       <Mascot>Which days can you study each week?</Mascot>
       <div className="mt-8">
         <DayPicker value={days} onChange={setDays} />
@@ -128,18 +128,6 @@ export function RoutineEditScreen({ value, onBack, onConfirm }: { value: Day[]; 
       </div>
       <p className="mt-6 text-sm font-semibold text-muted-foreground">Your new routine. Subjects are shared out evenly across your study days.</p>
       <div className="mt-3">
-        <RoutineList routine={buildRoutine(days)} />
-      </div>
-    </StepShell>
-  );
-}
-
-export function RoutineScreen({ days, onBack, onDone }: { days: Day[]; onBack: () => void; onDone: () => void }) {
-  return (
-    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" onClick={onDone}>Let's go</Button>}>
-      <Mascot>Here's your weekly routine!</Mascot>
-      <p className="mt-6 text-sm font-semibold text-muted-foreground">Every core subject is shared out evenly across your study days.</p>
-      <div className="mt-4">
         <RoutineList routine={buildRoutine(days)} />
       </div>
     </StepShell>

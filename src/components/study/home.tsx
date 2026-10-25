@@ -58,24 +58,15 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
               transition={{ delay: 0.08 * i, type: "spring", stiffness: 260, damping: 22 }}
               className={cn(
                 "flex aspect-[4/5] flex-col justify-between rounded-3xl border-2 p-4",
-                isDone
-                  ? "border-primary bg-primary/10 shadow-[0_5px_0_var(--primary-edge)]"
-                  : isCurrent
-                    ? "border-primary/70 bg-card shadow-[0_5px_0_var(--primary-edge)]"
-                    : "bg-card shadow-[0_5px_0_var(--border)]",
+                isDone ? "border-primary bg-primary/10 shadow-[0_5px_0_var(--primary-edge)]" : "border-primary/70 bg-card shadow-[0_5px_0_var(--primary-edge)]",
               )}
             >
-              <span
-                className={cn(
-                  "grid size-16 place-items-center rounded-2xl",
-                  isDone || isCurrent ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-                )}
-              >
+              <span className="grid size-16 place-items-center rounded-2xl bg-primary text-primary-foreground">
                 {isDone ? <Check className="size-8" strokeWidth={3} /> : <Icon className="size-8" strokeWidth={2.4} />}
               </span>
               <div>
                 <p className="text-lg font-black leading-tight">{SUBJECT_NAMES[s]}</p>
-                <p className={cn("mt-1 text-xs font-black uppercase tracking-wider", isDone || isCurrent ? "text-primary" : "text-muted-foreground")}>{status}</p>
+                <p className="mt-1 text-xs font-black uppercase tracking-wider text-primary">{status}</p>
               </div>
             </motion.div>
           );
