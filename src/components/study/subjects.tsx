@@ -76,9 +76,6 @@ export function TopicsScreen({ subject, topicsDone, sessions, onBack, onStart }:
               </span>
               <span className="min-w-0 flex-1">
                 <b className="block truncate text-base">{t.name}</b>
-                <span className="text-xs font-bold text-muted-foreground">
-                  {`${QUESTIONS_PER_TOPIC_SESSION} questions`}
-                </span>
               </span>
             </motion.button>
           );

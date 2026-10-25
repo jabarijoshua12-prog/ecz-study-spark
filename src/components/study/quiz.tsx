@@ -110,10 +110,6 @@ export function QuizScreen({ session, onChange, onExit, onFinish }: { session: S
           <X />
         </Button>
         <ProgressBar value={session.index / session.questions.length} />
-        <span className="flex shrink-0 items-center gap-1 text-base font-black text-wrong" aria-label={`${triesLeft} tries left`}>
-          <Heart className="size-5 fill-current" />
-          {triesLeft}
-        </span>
       </header>
 
       <AnimatePresence mode="wait">
