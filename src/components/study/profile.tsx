@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { BookCheck, ChevronRight, Flame, GraduationCap, LogOut, Zap } from "lucide-react";
+import { BookCheck, ChevronRight, Flame, GraduationCap, LogOut, Pencil, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buildRoutine } from "@/lib/study-logic";
 import type { StudyState } from "@/hooks/use-study-store";
 import { GradeOptions, RoutineList } from "./ui-bits";
 
-export function ProfileScreen({ state, onGrade, onLogout }: { state: StudyState; onGrade: (g: number) => void; onLogout: () => void }) {
+export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { state: StudyState; onGrade: (g: number) => void; onEditRoutine: () => void; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
   const user = state.user ?? { name: "Learner", email: "" };
   const initials = user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -46,8 +46,13 @@ export function ProfileScreen({ state, onGrade, onLogout }: { state: StudyState;
         <ChevronRight className="size-5 text-muted-foreground" />
       </button>
 
-      <h2 className="mt-8 text-xs font-black uppercase tracking-widest text-muted-foreground">Weekly routine</h2>
-      <div className="mt-3">
+      <div className="mt-8 flex items-center gap-2">
+        <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Weekly routine</h2>
+        <Button variant="ghost" size="icon-sm" onClick={onEditRoutine} aria-label="Edit weekly routine" className="text-primary">
+          <Pencil />
+        </Button>
+      </div>
+      <div className="mt-2">
         <RoutineList routine={buildRoutine(state.days)} />
       </div>
 

@@ -1,19 +1,9 @@
 import { motion } from "motion/react";
-import { Check, Flame, Lock, Star, Trophy, Zap } from "lucide-react";
+import { Check, Flame, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  DAY_NAMES,
-  QUESTIONS_PER_SUBJECT_DAILY,
-  QUESTIONS_PER_TOPIC_DAILY,
-  SUBJECT_NAMES,
-  buildRoutine,
-  dayKey,
-  nextStudyDay,
-  topicsForDay,
-  type SubjectId,
-} from "@/lib/study-logic";
-import { topicName, topicsOf } from "@/lib/question-bank";
+import { SUBJECT_NAMES, buildRoutine, dayKey, nextStudyDay, topicsForDay, type SubjectId } from "@/lib/study-logic";
+import { topicsOf } from "@/lib/question-bank";
 import type { StudyState } from "@/hooks/use-study-store";
 import { Logo, SUBJECT_ICON } from "./ui-bits";
 
@@ -29,22 +19,10 @@ export function todaysPlan(state: StudyState, now = new Date()) {
 }
 
 export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; onStart: () => void; onPractice: () => void }) {
-  const plan = todaysPlan(state);
-  const { next, subjects, done, session, current, allDone } = plan;
+  const { subjects, done, session, current, allDone } = todaysPlan(state);
+  const firstName = state.user?.name.split(" ")[0] ?? "there";
 
-  const answered = (s: SubjectId, t: string) => {
-    if (done.includes(s)) return QUESTIONS_PER_TOPIC_DAILY;
-    if (session?.subject === s) return session.questions.slice(0, session.index).filter((q) => q.topicId === t).length;
-    return 0;
-  };
-
-  const label = allDone
-    ? "Done for today"
-    : session
-      ? `Continue · ${session.index}/${session.questions.length}`
-      : current
-        ? `Start ${SUBJECT_NAMES[current]}`
-        : "Start";
+  const label = allDone ? "Done for today" : session ? "Continue" : current ? `Start ${SUBJECT_NAMES[current]}` : "Start";
 
   return (
     <div className="pb-44">
@@ -62,13 +40,47 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
         </div>
       </header>
 
-      <section className="mt-7">
-        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{next?.offset === 0 ? "Today" : "Rest day · up next"}</p>
-        <h1 className="mt-1 text-2xl font-black">{next ? `${DAY_NAMES[next.day]}'s path` : "Your path"}</h1>
-        <p className="mt-1 text-sm font-semibold text-muted-foreground">
-          {subjects.length} subjects · {QUESTIONS_PER_SUBJECT_DAILY} questions each
-        </p>
-      </section>
+      <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-3xl font-black">
+        Welcome, {firstName}
+      </motion.h1>
+
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        {subjects.map((s, i) => {
+          const Icon = SUBJECT_ICON[s];
+          const isDone = done.includes(s);
+          const isCurrent = current === s;
+          const status = isDone ? "Complete" : isCurrent ? (session ? "In progress" : "Up next") : "Locked";
+          return (
+            <motion.div
+              key={s}
+              initial={{ opacity: 0, y: 14, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.08 * i, type: "spring", stiffness: 260, damping: 22 }}
+              className={cn(
+                "flex aspect-[4/5] flex-col justify-between rounded-3xl border-2 p-4",
+                isDone
+                  ? "border-primary bg-primary/10 shadow-[0_5px_0_var(--primary-edge)]"
+                  : isCurrent
+                    ? "border-primary/70 bg-card shadow-[0_5px_0_var(--primary-edge)]"
+                    : "bg-card shadow-[0_5px_0_var(--border)]",
+              )}
+            >
+              <span
+                className={cn(
+                  "grid size-16 place-items-center rounded-2xl",
+                  isDone || isCurrent ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                )}
+              >
+                {isDone ? <Check className="size-8" strokeWidth={3} /> : <Icon className="size-8" strokeWidth={2.4} />}
+              </span>
+              <div>
+                <p className="text-lg font-black leading-tight">{SUBJECT_NAMES[s]}</p>
+                <p className={cn("mt-1 text-xs font-black uppercase tracking-wider", isDone || isCurrent ? "text-primary" : "text-muted-foreground")}>{status}</p>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {allDone && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mt-6 flex items-center gap-4 rounded-2xl border-2 border-primary bg-primary/10 p-4">
@@ -80,65 +92,6 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
           <Button size="sm" variant="secondary" onClick={onPractice}>Practise</Button>
         </motion.div>
       )}
-
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        {subjects.map((s, col) => {
-          const Icon = SUBJECT_ICON[s];
-          const isDone = done.includes(s);
-          const isCurrent = current === s;
-          const topics = plan.topics(s);
-          return (
-            <motion.section key={s} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * col }} className="flex flex-col items-center">
-              <div className={cn("w-full rounded-2xl border-2 p-3", isDone ? "border-primary bg-primary/10" : isCurrent ? "border-primary/60 bg-card" : "bg-card")}>
-                <div className="flex items-center gap-2">
-                  <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", isDone || isCurrent ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-                    <Icon className="size-5" strokeWidth={2.4} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Subject {col + 1}</p>
-                    <p className="truncate text-sm font-black">{SUBJECT_NAMES[s]}</p>
-                  </div>
-                </div>
-                <p className={cn("mt-2 text-[11px] font-black uppercase tracking-wider", isDone || isCurrent ? "text-primary" : "text-muted-foreground")}>
-                  {isDone ? "Complete" : isCurrent ? (session ? "In progress" : "Up next") : "Locked"}
-                </p>
-              </div>
-
-              <div className="relative mt-5 flex w-full flex-col items-center gap-9 pb-2">
-                <span aria-hidden className={cn("absolute top-8 bottom-12 left-1/2 w-1.5 -translate-x-1/2 rounded-full", isDone ? "bg-primary" : "bg-border")} />
-                {topics.map((t, i) => {
-                  const count = answered(s, t);
-                  const nodeDone = count >= QUESTIONS_PER_TOPIC_DAILY;
-                  const firstOpen = isCurrent && !nodeDone && topics.findIndex((x) => answered(s, x) < QUESTIONS_PER_TOPIC_DAILY) === i;
-                  const offset = [-14, 14, -14][i] ?? 0;
-                  return (
-                    <div key={t} className="relative flex flex-col items-center" style={{ transform: `translateX(${offset}px)` }}>
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 16, delay: 0.15 + 0.08 * i + 0.1 * col }}
-                        className={cn(
-                          "relative z-10 grid size-16 place-items-center rounded-full border-2",
-                          nodeDone
-                            ? "border-primary bg-primary text-primary-foreground shadow-[0_5px_0_var(--primary-edge)]"
-                            : firstOpen
-                              ? "node-pulse border-primary bg-muted text-primary"
-                              : "border-border bg-muted text-muted-foreground shadow-[0_5px_0_var(--border)]",
-                        )}
-                        aria-label={`${topicName(t)}: ${nodeDone ? "done" : "locked"}`}
-                      >
-                        {nodeDone ? <Check className="size-7" strokeWidth={3.2} /> : isCurrent ? <Star className="size-6" strokeWidth={2.6} /> : <Lock className="size-5" strokeWidth={2.6} />}
-                      </motion.span>
-                      <span className="relative z-10 mt-2.5 max-w-[8.5rem] rounded-md bg-background px-1.5 text-center text-[11px] font-extrabold leading-tight text-muted-foreground">{topicName(t)}</span>
-                      {count > 0 && !nodeDone && <span className="relative z-10 mt-0.5 rounded-md bg-background px-1.5 text-[10px] font-black text-primary">{count}/{QUESTIONS_PER_TOPIC_DAILY}</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.section>
-          );
-        })}
-      </div>
 
       <div className="fixed inset-x-0 bottom-[4.75rem] z-30 bg-linear-to-t from-background via-background to-transparent pt-8">
         <div className="mx-auto max-w-md px-5 pb-3">

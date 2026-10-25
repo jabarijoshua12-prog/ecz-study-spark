@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useStudyStore, type Session } from "@/hooks/use-study-store";
 import { SUBJECT_NAMES, dayKey, nextStreak, XP_PER_CORRECT, type SubjectId } from "@/lib/study-logic";
 import { buildDailyQuestions, buildTopicQuestions, topicName, topicSubject } from "@/lib/question-bank";
-import { AuthScreen, DaysScreen, GradeScreen, RoutineScreen } from "./study/onboarding";
+import { AuthScreen, DaysScreen, GradeScreen, RoutineEditScreen, RoutineScreen } from "./study/onboarding";
 import { HomeScreen, todaysPlan } from "./study/home";
 import { QuizScreen } from "./study/quiz";
 import { CompleteScreen } from "./study/complete";
@@ -15,6 +15,7 @@ import { Logo } from "./study/ui-bits";
 type View =
   | { name: Tab }
   | { name: "topics"; subject: SubjectId }
+  | { name: "routine-edit" }
   | { name: "quiz"; topicId?: string }
   | { name: "complete"; subject: SubjectId; topicId?: string; xp: number; accuracy: number; nextSubject?: SubjectId | undefined };
 
@@ -136,6 +137,17 @@ export function StudyApp() {
         ];
     const back: View = view.topicId ? { name: "topics", subject: view.subject } : { name: "home" };
     content = <CompleteScreen key={`${view.subject}-${view.topicId ?? "daily"}`} stages={stages} xp={view.xp} accuracy={view.accuracy} returnLabel={view.topicId ? "Heading back to topics…" : "Heading back to your path…"} onDone={() => go(back)} />;
+  } else if (view.name === "routine-edit") {
+    content = (
+      <RoutineEditScreen
+        value={state.days}
+        onBack={() => go({ name: "profile" })}
+        onConfirm={(days) => {
+          update((s) => ({ ...s, days }));
+          go({ name: "profile" });
+        }}
+      />
+    );
   } else if (view.name === "topics") {
     content = <TopicsScreen subject={view.subject} topicsDone={state.topicsDone} sessions={state.topicSessions} onBack={() => go({ name: "subjects" })} onStart={startTopic} />;
   } else {
@@ -148,6 +160,7 @@ export function StudyApp() {
           <ProfileScreen
             state={state}
             onGrade={(grade) => update((s) => ({ ...s, grade }))}
+            onEditRoutine={() => go({ name: "routine-edit" })}
             onLogout={() => {
               update((s) => ({ ...s, user: null }));
               setView({ name: "home" });

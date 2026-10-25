@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Check, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { QUESTIONS_PER_TOPIC_SESSION, SUBJECT_IDS, SUBJECT_NAMES, type SubjectId } from "@/lib/study-logic";
 import { topicsOf } from "@/lib/question-bank";
 import type { Session } from "@/hooks/use-study-store";
-import { ProgressBar, SUBJECT_ICON, choiceClass } from "./ui-bits";
+import { SUBJECT_ICON, choiceClass } from "./ui-bits";
 
 export function SubjectsScreen({ topicsDone, onOpen }: { topicsDone: string[]; onOpen: (s: SubjectId) => void }) {
   return (
@@ -17,7 +17,6 @@ export function SubjectsScreen({ topicsDone, onOpen }: { topicsDone: string[]; o
       <div className="mt-6 grid gap-3">
         {SUBJECT_IDS.map((s, i) => {
           const topics = topicsOf(s);
-          const done = topics.filter((t) => topicsDone.includes(t.id)).length;
           const Icon = SUBJECT_ICON[s];
           return (
             <motion.button
@@ -33,10 +32,7 @@ export function SubjectsScreen({ topicsDone, onOpen }: { topicsDone: string[]; o
               </span>
               <span className="min-w-0 flex-1">
                 <b className="block text-lg font-black">{SUBJECT_NAMES[s]}</b>
-                <span className="text-xs font-bold text-muted-foreground">
-                  {done}/{topics.length} topics complete
-                </span>
-                <ProgressBar value={done / topics.length} className="mt-2 h-2.5" />
+                <span className="text-xs font-bold text-muted-foreground">{topics.length} topics</span>
               </span>
               <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
             </motion.button>
@@ -71,18 +67,17 @@ export function TopicsScreen({ subject, topicsDone, sessions, onBack, onStart }:
 
       <div className="grid gap-3 px-5 pt-5">
         {topics.map((t, i) => {
-          const done = topicsDone.includes(t.id);
           const s = sessions[t.id];
           const active = selected === t.id;
           return (
             <motion.button key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 * i }} onClick={() => setSelected(t.id)} aria-pressed={active} className={choiceClass(active)}>
-              <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl text-sm font-black", done ? "bg-primary text-primary-foreground" : active ? "bg-primary/20" : "bg-muted")}>
-                {done ? <Check className="size-5" strokeWidth={3} /> : i + 1}
+              <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl text-sm font-black", active ? "bg-primary/20" : "bg-muted")}>
+                {i + 1}
               </span>
               <span className="min-w-0 flex-1">
                 <b className="block truncate text-base">{t.name}</b>
                 <span className="text-xs font-bold text-muted-foreground">
-                  {s ? `In progress · ${s.index}/${s.questions.length}` : done ? "Complete · practise again" : `${QUESTIONS_PER_TOPIC_SESSION} questions`}
+                  {`${QUESTIONS_PER_TOPIC_SESSION} questions`}
                 </span>
               </span>
             </motion.button>

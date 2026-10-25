@@ -88,6 +88,22 @@ export function DaysScreen({ value, onBack, onNext }: { value: Day[]; onBack: ()
   );
 }
 
+export function RoutineEditScreen({ value, onBack, onConfirm }: { value: Day[]; onBack: () => void; onConfirm: (d: Day[]) => void }) {
+  const [days, setDays] = useState<Day[]>(value);
+  return (
+    <StepShell title="Weekly routine" onBack={onBack} footer={<Button size="lg" className="w-full" disabled={days.length === 0} onClick={() => onConfirm(days)}>Confirm</Button>}>
+      <Mascot>Which days can you study each week?</Mascot>
+      <div className="mt-8">
+        <DayPicker value={days} onChange={setDays} />
+      </div>
+      <p className="mt-6 text-sm font-semibold text-muted-foreground">Your new routine. Subjects are shared out evenly across your study days.</p>
+      <div className="mt-3">
+        <RoutineList routine={buildRoutine(days)} />
+      </div>
+    </StepShell>
+  );
+}
+
 export function RoutineScreen({ days, onBack, onDone }: { days: Day[]; onBack: () => void; onDone: () => void }) {
   return (
     <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" onClick={onDone}>Let's go</Button>}>
