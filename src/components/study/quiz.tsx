@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useAnimate } from "motion/react";
-import { CheckCircle2, Heart, Lightbulb, X, XCircle } from "lucide-react";
+import { CheckCircle2, Lightbulb, X, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { MAX_STRIKES, XP_PER_CORRECT, outcomeAfterWrong } from "@/lib/study-logic";
+import { XP_PER_CORRECT, outcomeAfterWrong } from "@/lib/study-logic";
 import { topicName } from "@/lib/question-bank";
 import type { Session } from "@/hooks/use-study-store";
 import { Dots, ProgressBar } from "./ui-bits";
@@ -101,7 +101,6 @@ export function QuizScreen({ session, onChange, onExit, onFinish }: { session: S
     return "idle";
   };
 
-  const triesLeft = MAX_STRIKES - session.strikes;
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col">

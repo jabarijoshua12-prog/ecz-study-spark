@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { QUESTIONS_PER_TOPIC_SESSION, SUBJECT_IDS, SUBJECT_NAMES, type SubjectId } from "@/lib/study-logic";
+import { SUBJECT_IDS, SUBJECT_NAMES, type SubjectId } from "@/lib/study-logic";
 import { topicsOf } from "@/lib/question-bank";
 import type { Session } from "@/hooks/use-study-store";
 import { SUBJECT_ICON, choiceClass } from "./ui-bits";
