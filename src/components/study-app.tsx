@@ -38,13 +38,24 @@ export function StudyApp() {
   if (!state.onboarded) {
     if (step === "grade")
       return <GradeScreen value={state.grade} onBack={() => update((s) => ({ ...s, user: null }))} onNext={(grade) => { update((s) => ({ ...s, grade })); setStep("days"); }} />;
+    if (step === "routine")
+      return (
+        <RoutineScreen
+          days={state.days}
+          onBack={() => setStep("days")}
+          onNext={() => {
+            update((s) => ({ ...s, onboarded: true }));
+            setView({ name: "home" });
+          }}
+        />
+      );
     return (
       <DaysScreen
         value={state.days}
         onBack={() => setStep("grade")}
         onNext={(days) => {
-          update((s) => ({ ...s, days, onboarded: true }));
-          setView({ name: "home" });
+          update((s) => ({ ...s, days }));
+          setStep("routine");
         }}
       />
     );
