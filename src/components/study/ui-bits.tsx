@@ -144,11 +144,11 @@ export function DayPicker({ value, onChange }: { value: Day[]; onChange: (d: Day
 
 export function RoutineList({ routine }: { routine: Routine }) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-1 rounded-2xl border-2 bg-card p-2">
       {DAYS.filter((d) => routine[d]).map((d, i) => {
         const subs = routine[d];
         return (
-          <motion.div key={d} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }} className={cn("flex items-center gap-2 rounded-2xl border-2 p-2.5", subs ? "bg-card" : "border-dashed")}>
+          <motion.div key={d} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }} className="flex items-center gap-2 p-1">
             <span className={cn("w-10 shrink-0 pl-1 text-sm font-black", !subs && "text-muted-foreground")}>{d}</span>
             {subs ? (
               subs.map((s) => {

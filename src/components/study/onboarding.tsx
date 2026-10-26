@@ -115,6 +115,17 @@ export function DaysScreen({ value, onBack, onNext }: { value: Day[]; onBack: ()
   );
 }
 
+export function RoutineScreen({ days, onBack, onNext }: { days: Day[]; onBack: () => void; onNext: () => void }) {
+  return (
+    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" onClick={onNext}>Let's go</Button>}>
+      <Mascot>Here's your weekly routine</Mascot>
+      <div className="mt-8">
+        <RoutineList routine={buildRoutine(days)} />
+      </div>
+    </StepShell>
+  );
+}
+
 export function RoutineEditScreen({ value, onBack, onConfirm }: { value: Day[]; onBack: () => void; onConfirm: (d: Day[]) => void }) {
   const [days, setDays] = useState<Day[]>(value);
   return (
