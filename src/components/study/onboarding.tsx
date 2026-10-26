@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "motion/react";
-import { GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SUBJECTS_PER_DAY, QUESTIONS_PER_SUBJECT_DAILY, buildRoutine, type Day } from "@/lib/study-logic";
 import { DayPicker, Dots, GradeOptions, Logo, Mascot, RoutineList, StepShell } from "./ui-bits";
@@ -16,44 +15,72 @@ function GoogleG() {
   );
 }
 
+const nameFromEmail = (email: string) => {
+  const local = email.split("@")[0] ?? "";
+  const words = local.split(/[._-]+/).filter(Boolean);
+  return words.length ? words.map((w) => w[0]!.toUpperCase() + w.slice(1)).join(" ") : "Student";
+};
+
+const fieldClass =
+  "h-12 w-full rounded-2xl border-2 border-border bg-card px-4 text-base font-bold text-foreground outline-none transition-colors placeholder:font-semibold placeholder:text-muted-foreground focus:border-primary";
+
 export function AuthScreen({ onSignIn }: { onSignIn: (user: { name: string; email: string }) => void }) {
-  const [loading, setLoading] = useState(false);
-  const signIn = () => {
-    setLoading(true);
+  const [loading, setLoading] = useState<"google" | "email" | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const google = () => {
+    setLoading("google");
     window.setTimeout(() => onSignIn({ name: "Joshua Jabari", email: "joshua.jabari@gmail.com" }), 900);
   };
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    const clean = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return setError("Enter a valid email address.");
+    if (password.length < 6) return setError("Password must be at least 6 characters.");
+    setError("");
+    setLoading("email");
+    window.setTimeout(() => onSignIn({ name: nameFromEmail(clean), email: clean }), 700);
+  };
+
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-6 pb-8 pt-8">
       <Logo />
-      <div className="flex flex-1 flex-col items-center justify-center py-10 text-center">
-        <motion.div
-          initial={{ scale: 0.4, rotate: -20, opacity: 0 }}
-          animate={{ scale: 1, rotate: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 13 }}
-          className="glow-pulse grid size-28 place-items-center rounded-[2rem] bg-primary text-primary-foreground"
-        >
-          <GraduationCap className="size-14" strokeWidth={2.2} />
-        </motion.div>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mt-10 text-3xl font-black leading-tight">
-          Study smarter with a plan built around you.
+      <div className="flex flex-1 flex-col justify-center py-8">
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center text-3xl font-black leading-tight">
+          Sign up and unlock your potential
         </motion.h1>
-        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mt-3 text-sm font-semibold text-muted-foreground">
-          Two subjects a day. Fifteen questions each. Built from ECZ past papers.
-        </motion.p>
+
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-10">
+          <Button size="lg" variant="outline" className="w-full" onClick={google} disabled={loading !== null}>
+            {loading === "google" ? (
+              <Dots />
+            ) : (
+              <>
+                <GoogleG />
+                Continue with Google
+              </>
+            )}
+          </Button>
+
+          <div className="my-6 flex items-center gap-3 text-xs font-black uppercase tracking-widest text-muted-foreground">
+            <span className="h-0.5 flex-1 rounded-full bg-border" />
+            or
+            <span className="h-0.5 flex-1 rounded-full bg-border" />
+          </div>
+
+          <form onSubmit={submit} className="grid gap-3" noValidate>
+            <input type="email" autoComplete="email" placeholder="Email" aria-label="Email" value={email} onChange={(e) => setEmail(e.target.value)} className={fieldClass} />
+            <input type="password" autoComplete="current-password" placeholder="Password" aria-label="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={fieldClass} />
+            {error && <p className="text-sm font-bold text-wrong" role="alert">{error}</p>}
+            <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading !== null}>
+              {loading === "email" ? <Dots /> : "Continue"}
+            </Button>
+          </form>
+        </motion.div>
       </div>
-      <Button size="lg" className="w-full" onClick={signIn} disabled={loading}>
-        {loading ? (
-          <Dots />
-        ) : (
-          <>
-            <span className="grid size-6 place-items-center rounded-full bg-foreground">
-              <GoogleG />
-            </span>
-            Continue with Google
-          </>
-        )}
-      </Button>
-      <p className="mt-4 text-center text-xs font-semibold text-muted-foreground">New or returning — one tap signs you up or logs you in.</p>
     </main>
   );
 }
@@ -61,7 +88,7 @@ export function AuthScreen({ onSignIn }: { onSignIn: (user: { name: string; emai
 export function GradeScreen({ value, onBack, onNext }: { value: number | null; onBack: () => void; onNext: (g: number) => void }) {
   const [grade, setGrade] = useState<number | null>(value);
   return (
-    <StepShell progress={1 / 3} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={grade === null} onClick={() => grade !== null && onNext(grade)}>Continue</Button>}>
+    <StepShell progress={1 / 2} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={grade === null} onClick={() => grade !== null && onNext(grade)}>Continue</Button>}>
       <Mascot>Which grade are you in?</Mascot>
       <div className="mt-8">
         <GradeOptions value={grade} onChange={setGrade} />
@@ -73,7 +100,7 @@ export function GradeScreen({ value, onBack, onNext }: { value: number | null; o
 export function DaysScreen({ value, onBack, onNext }: { value: Day[]; onBack: () => void; onNext: (d: Day[]) => void }) {
   const [days, setDays] = useState<Day[]>(value);
   return (
-    <StepShell progress={2 / 3} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={days.length === 0} onClick={() => onNext(days)}>Continue</Button>}>
+    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" disabled={days.length === 0} onClick={() => onNext(days)}>Let's go</Button>}>
       <Mascot>Which days can you study each week?</Mascot>
       <div className="mt-8">
         <DayPicker value={days} onChange={setDays} />
@@ -98,18 +125,6 @@ export function RoutineEditScreen({ value, onBack, onConfirm }: { value: Day[]; 
       </div>
       <p className="mt-6 text-sm font-semibold text-muted-foreground">Your new routine. Subjects are shared out evenly across your study days.</p>
       <div className="mt-3">
-        <RoutineList routine={buildRoutine(days)} />
-      </div>
-    </StepShell>
-  );
-}
-
-export function RoutineScreen({ days, onBack, onDone }: { days: Day[]; onBack: () => void; onDone: () => void }) {
-  return (
-    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" onClick={onDone}>Let's go</Button>}>
-      <Mascot>Here's your weekly routine!</Mascot>
-      <p className="mt-6 text-sm font-semibold text-muted-foreground">Every core subject is shared out evenly across your study days.</p>
-      <div className="mt-4">
         <RoutineList routine={buildRoutine(days)} />
       </div>
     </StepShell>
