@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useStudyStore, type Session } from "@/hooks/use-study-store";
 import { SUBJECT_NAMES, dayKey, nextStreak, XP_PER_CORRECT, type SubjectId } from "@/lib/study-logic";
 import { buildDailyQuestions, buildTopicQuestions, topicName, topicSubject } from "@/lib/question-bank";
-import { AuthScreen, DaysScreen, GradeScreen, RoutineEditScreen } from "./study/onboarding";
+import { AuthScreen, DaysScreen, GradeScreen, RoutineEditScreen, RoutineScreen } from "./study/onboarding";
 import { HomeScreen, todaysPlan } from "./study/home";
 import { QuizScreen } from "./study/quiz";
 import { CompleteScreen } from "./study/complete";
@@ -24,7 +24,7 @@ const seed = () => (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
 export function StudyApp() {
   const { state, update, ready } = useStudyStore();
   const [view, setView] = useState<View>({ name: "home" });
-  const [step, setStep] = useState<"grade" | "days">("grade");
+  const [step, setStep] = useState<"grade" | "days" | "routine">("grade");
 
   if (!ready)
     return (
