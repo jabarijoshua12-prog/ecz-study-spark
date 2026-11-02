@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Atom, Check, ChevronLeft, Dna, FlaskConical, GraduationCap, Pi, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { DAYS, DAY_NAMES, type Day } from "@/lib/study-logic";
+import { DAYS, DAY_NAMES, type Day, type SubjectId } from "@/lib/study-logic";
 
 export const SUBJECT_ICON: Record<SubjectId, LucideIcon> = {
   math: Pi,
