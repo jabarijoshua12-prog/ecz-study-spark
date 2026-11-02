@@ -2,9 +2,10 @@ import { useState } from "react";
 import { BookCheck, ChevronRight, Flame, GraduationCap, LogOut, Pencil, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { buildRoutine } from "@/lib/study-logic";
+import { DAYS, DAY_NAMES } from "@/lib/study-logic";
+import { cn } from "@/lib/utils";
 import type { StudyState } from "@/hooks/use-study-store";
-import { GradeOptions, RoutineList } from "./ui-bits";
+import { GradeOptions } from "./ui-bits";
 
 export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { state: StudyState; onGrade: (g: number) => void; onEditRoutine: () => void; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
@@ -53,7 +54,16 @@ export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { sta
         </Button>
       </div>
       <div className="mt-2">
-        <RoutineList routine={buildRoutine(state.days)} />
+        <div className="grid grid-cols-7 gap-1.5 rounded-2xl border-2 bg-card p-2" aria-label="Study days">
+          {DAYS.map((d) => {
+            const on = state.days.includes(d);
+            return (
+              <span key={d} aria-label={`${DAY_NAMES[d]}${on ? " (study day)" : ""}`} className={cn("grid h-10 place-items-center rounded-xl text-xs font-black", on ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+                {d.slice(0, 2)}
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       <Button size="lg" variant="secondary" className="mt-8 w-full text-wrong" onClick={onLogout}>

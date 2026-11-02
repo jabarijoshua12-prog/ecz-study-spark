@@ -1,30 +1,29 @@
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useStudyStore, type Session } from "@/hooks/use-study-store";
-import { SUBJECT_NAMES, dayKey, nextStreak, XP_PER_CORRECT, type SubjectId } from "@/lib/study-logic";
+import { dayKey, nextStreak, XP_PER_CORRECT, type SubjectId } from "@/lib/study-logic";
 import { buildDailyQuestions, buildTopicQuestions, topicName, topicSubject } from "@/lib/question-bank";
-import { AuthScreen, DaysScreen, GradeScreen, RoutineEditScreen, RoutineScreen } from "./study/onboarding";
+import { AuthScreen, DaysScreen, GradeScreen, RoutineEditScreen } from "./study/onboarding";
 import { HomeScreen, todaysPlan } from "./study/home";
 import { QuizScreen } from "./study/quiz";
 import { CompleteScreen } from "./study/complete";
-import { SubjectsScreen, TopicsScreen } from "./study/subjects";
+import { TopicsScreen } from "./study/subjects";
 import { ProfileScreen } from "./study/profile";
 import { BottomNav, type Tab } from "./study/bottom-nav";
 import { Logo } from "./study/ui-bits";
 
 type View =
   | { name: Tab }
-  | { name: "topics"; subject: SubjectId }
   | { name: "routine-edit" }
   | { name: "quiz"; topicId?: string }
-  | { name: "complete"; subject: SubjectId; topicId?: string; xp: number; accuracy: number; nextSubject?: SubjectId | undefined };
+  | { name: "complete"; subject: SubjectId; topicId?: string; xp: number; accuracy: number };
 
 const seed = () => (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
 
 export function StudyApp() {
   const { state, update, ready } = useStudyStore();
   const [view, setView] = useState<View>({ name: "home" });
-  const [step, setStep] = useState<"grade" | "days" | "routine">("grade");
+  const [step, setStep] = useState<"grade" | "days">("grade");
 
   if (!ready)
     return (
@@ -38,24 +37,13 @@ export function StudyApp() {
   if (!state.onboarded) {
     if (step === "grade")
       return <GradeScreen value={state.grade} onBack={() => update((s) => ({ ...s, user: null }))} onNext={(grade) => { update((s) => ({ ...s, grade })); setStep("days"); }} />;
-    if (step === "routine")
-      return (
-        <RoutineScreen
-          days={state.days}
-          onBack={() => setStep("days")}
-          onNext={() => {
-            update((s) => ({ ...s, onboarded: true }));
-            setView({ name: "home" });
-          }}
-        />
-      );
     return (
       <DaysScreen
         value={state.days}
         onBack={() => setStep("grade")}
         onNext={(days) => {
-          update((s) => ({ ...s, days }));
-          setStep("routine");
+          update((s) => ({ ...s, days, onboarded: true }));
+          setView({ name: "home" });
         }}
       />
     );
@@ -101,8 +89,6 @@ export function StudyApp() {
     const today = dayKey(new Date());
     const xp = s.correct * XP_PER_CORRECT;
     if (s.kind === "daily") {
-      const plan = todaysPlan(state);
-      const nextSubject = plan.subjects.find((x) => x !== s.subject && !plan.done.includes(x));
       update((st) => {
         const done = st.daily.dateKey === today ? st.daily.done : [];
         return {
@@ -114,7 +100,7 @@ export function StudyApp() {
           lastStreakDate: today,
         };
       });
-      go({ name: "complete", subject: s.subject, xp, accuracy: accuracy(s), nextSubject });
+      go({ name: "complete", subject: s.subject, xp, accuracy: accuracy(s) });
     } else if (s.topicId) {
       const id = s.topicId;
       update((st) => {
@@ -134,7 +120,7 @@ export function StudyApp() {
       content = null;
       queueMicrotask(() => setView({ name: "home" }));
     } else {
-      const exitTo: View = session.kind === "topic" ? { name: "topics", subject: session.subject } : { name: "home" };
+      const exitTo: View = session.kind === "topic" ? { name: "topics" } : { name: "home" };
       content = (
         <QuizScreen
           session={session}
@@ -151,9 +137,9 @@ export function StudyApp() {
       ? [{ title: "Topic complete!", subtitle: `${topicName(view.topicId)} is in the bag.` }]
       : [
           { title: "Lesson complete!", subtitle: "Fifteen questions down." },
-          { title: "Subject complete!", subtitle: view.nextSubject ? `Next up: ${SUBJECT_NAMES[view.nextSubject]}. Hit Start when you're ready.` : `${SUBJECT_NAMES[view.subject]} is done. That's today's path finished!` },
+          { title: "Done for today!", subtitle: "That's today's path finished. See you next study day!" },
         ];
-    const back: View = view.topicId ? { name: "topics", subject: view.subject } : { name: "home" };
+    const back: View = view.topicId ? { name: "topics" } : { name: "home" };
     content = <CompleteScreen key={`${view.subject}-${view.topicId ?? "daily"}`} stages={stages} xp={view.xp} accuracy={view.accuracy} returnLabel={view.topicId ? "Heading back to topics…" : "Heading back to your path…"} onDone={() => go(back)} />;
   } else if (view.name === "routine-edit") {
     content = (
@@ -166,14 +152,12 @@ export function StudyApp() {
         }}
       />
     );
-  } else if (view.name === "topics") {
-    content = <TopicsScreen subject={view.subject} topicsDone={state.topicsDone} sessions={state.topicSessions} onBack={() => go({ name: "subjects" })} onStart={startTopic} />;
   } else {
     tab = view.name;
     content = (
       <main className="mx-auto w-full max-w-md px-5 pb-28 pt-6">
-        {view.name === "home" && <HomeScreen state={state} onStart={startDaily} onPractice={() => go({ name: "subjects" })} />}
-        {view.name === "subjects" && <SubjectsScreen topicsDone={state.topicsDone} onOpen={(subject) => go({ name: "topics", subject })} />}
+        {view.name === "home" && <HomeScreen state={state} onStart={startDaily} onPractice={() => go({ name: "topics" })} />}
+        {view.name === "topics" && <TopicsScreen grade={state.grade} sessions={state.topicSessions} onStart={startTopic} />}
         {view.name === "profile" && (
           <ProfileScreen
             state={state}
@@ -189,7 +173,7 @@ export function StudyApp() {
     );
   }
 
-  const key = view.name === "topics" ? `topics-${view.subject}` : view.name === "quiz" ? `quiz-${view.topicId ?? "daily"}` : view.name;
+  const key = view.name === "quiz" ? `quiz-${view.topicId ?? "daily"}` : view.name;
 
   return (
     <div className="min-h-dvh bg-background">
