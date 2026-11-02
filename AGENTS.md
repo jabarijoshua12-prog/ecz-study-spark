@@ -11,6 +11,6 @@
 
 # Project rules
 - Study rules (quotas, routine distribution, strikes, dates) live as pure functions in `src/lib/study-logic.ts` with tests beside them; UI imports them instead of hardcoding numbers, so rule changes stay in one tested place.
-- Questions come from templates in `src/lib/question-bank.ts` that vary numbers, wording and option order per seed; a later backend should keep this shape (`Question`) so screens don't change.
+- Questions come from templates in `src/lib/question-bank.ts` that vary numbers, wording and option order per seed; a later backend should keep this shape (`Question`) so screens don't change. Topics carry optional `grades`; screens read the syllabus through `topicsForGrade`, and the subjects the app teaches come from `ACTIVE_SUBJECTS`.
 - The app is frontend-only for now: state persists to localStorage via `useStudyStore`; swap that hook for server calls when the backend is added.
 - The whole app is one route (`/`) driven by a view state in `src/components/study-app.tsx`; screens live in `src/components/study/`.
