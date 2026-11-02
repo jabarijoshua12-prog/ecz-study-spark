@@ -59,16 +59,15 @@ export function HomeScreen({ state, onStart, onPractice }: { state: StudyState; 
           {upNext.length === 0 ? (
             <p className="mt-6 text-center text-sm font-bold text-muted-foreground">No study day set yet.</p>
           ) : (
-            <div className="mt-5 flex flex-col items-center">
+            <div className="mt-5 flex flex-col items-center gap-3">
               {upNext.map((id, i) => (
                 <Fragment key={id}>
-                  {i > 0 && <span aria-hidden className={cn("h-4 w-0.5 rounded-full", allDone ? "bg-primary" : "bg-border")} />}
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + 0.08 * i }}
                     className={cn(
-                      "flex w-full max-w-60 items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3 text-center text-base font-black",
+                      "flex w-full max-w-72 items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3 text-center text-base font-black",
                       allDone ? "border-primary bg-primary/10 text-primary" : "bg-muted",
                     )}
                   >
