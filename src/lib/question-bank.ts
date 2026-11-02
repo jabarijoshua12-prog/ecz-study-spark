@@ -25,7 +25,7 @@ export type Question = {
 
 type Draft = { prompt: string; correct: string; wrong: Array<string | number>; hint: string; steps: string[] };
 type Template = (r: Rng) => Draft;
-export type Topic = { id: string; subject: SubjectId; name: string; templates: Template[] };
+export type Topic = { id: string; subject: SubjectId; name: string; templates: Template[]; grades?: number[] };
 
 const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const SUB = "₀₁₂₃₄₅₆₇₈₉";
@@ -49,6 +49,12 @@ const facts =
       steps: [f.hint, f.why, `Answer: ${f.a}.`],
     };
   };
+
+const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : Math.abs(a));
+const frac = (n: number, d: number) => {
+  const g = gcd(n, d) || 1;
+  return d / g === 1 ? String(n / g) : `${n / g}/${d / g}`;
+};
 
 /* ---------------- Mathematics ---------------- */
 const sets: Template = (r) => {
@@ -84,6 +90,36 @@ const indices: Template = (r) => {
     wrong: [m * n - p, m + n + p, e + 1, e - 1, m * n].map(f),
     hint: "Multiplying powers of the same base: add the indices. Dividing: subtract them.",
     steps: [`${f(m)} × ${f(n)} = ${f(m + n)}`, `${f(m + n)} ÷ ${f(p)} = ${f(e)}`],
+  };
+};
+const vectors: Template = (r) => {
+  const [p, q, m] = pick(r, [[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [7, 24, 25]] as const);
+  const k = m > 15 ? 1 : int(r, 1, 2), x = p * k, y = q * k, mag = m * k;
+  const v = pick(r, ["a", "b", "p", "AB"]);
+  return {
+    prompt: pick(r, [
+      `Given that ${v} = (${x}, ${y}), find |${v}|.`,
+      `Find the magnitude of the vector ${v} = (${x}, ${y}).`,
+      `The column vector ${v} has components ${x} and ${y}. Calculate its length.`,
+    ]),
+    correct: String(mag),
+    wrong: [x + y, x * x + y * y, Math.abs(y - x), mag + 1, mag - 1],
+    hint: "The magnitude is the length of the arrow — use Pythagoras on the two components.",
+    steps: [`|${v}| = √(${x}² + ${y}²)`, `= √(${x * x} + ${y * y}) = √${x * x + y * y}`, `= ${mag}`],
+  };
+};
+const probability: Template = (r) => {
+  const red = int(r, 2, 9), blue = int(r, 2, 9), green = int(r, 1, 6), t = red + blue + green;
+  const correct = frac(red, t);
+  return {
+    prompt: pick(r, [
+      `A bag contains ${red} red, ${blue} blue and ${green} green balls. One ball is picked at random. Find the probability that it is red.`,
+      `A box holds ${red} red pens, ${blue} blue pens and ${green} green pens. A pen is taken at random. What is P(red)?`,
+    ]),
+    correct,
+    wrong: [frac(blue, t), frac(green, t), frac(t - red, t), `${red}/${blue + green}`, `1/${red}`, frac(red + 1, t)].filter((w) => w !== correct),
+    hint: "Probability = number of ways it can happen ÷ total number of outcomes.",
+    steps: [`Total balls = ${red} + ${blue} + ${green} = ${t}`, `P(red) = ${red}/${t}`, `= ${correct}`],
   };
 };
 const matrices: Template = (r) => {
@@ -385,12 +421,14 @@ const foodChains: Template = (r) => {
 };
 
 export const TOPICS: Topic[] = [
-  { id: "math-sets", subject: "math", name: "Sets", templates: [sets] },
-  { id: "math-linear", subject: "math", name: "Linear equations", templates: [linear] },
-  { id: "math-indices", subject: "math", name: "Indices", templates: [indices] },
-  { id: "math-matrices", subject: "math", name: "Matrices", templates: [matrices] },
-  { id: "math-trig", subject: "math", name: "Trigonometry", templates: [trig] },
-  { id: "math-stats", subject: "math", name: "Statistics", templates: [mean] },
+  { id: "math-sets", subject: "math", name: "Sets", templates: [sets], grades: [8, 9, 10] },
+  { id: "math-linear", subject: "math", name: "Linear equations", templates: [linear], grades: [8, 9, 10] },
+  { id: "math-indices", subject: "math", name: "Indices", templates: [indices], grades: [9, 10, 11] },
+  { id: "math-matrices", subject: "math", name: "Matrices", templates: [matrices], grades: [10, 11, 12] },
+  { id: "math-trig", subject: "math", name: "Trigonometry", templates: [trig], grades: [10, 11, 12] },
+  { id: "math-stats", subject: "math", name: "Statistics", templates: [mean], grades: [8, 9, 11, 12] },
+  { id: "math-vectors", subject: "math", name: "Vectors", templates: [vectors], grades: [11, 12] },
+  { id: "math-probability", subject: "math", name: "Probability", templates: [probability], grades: [9, 11, 12] },
   { id: "bio-cells", subject: "biology", name: "Cell structure", templates: [cells] },
   { id: "bio-food", subject: "biology", name: "Food tests", templates: [foodTests] },
   { id: "bio-resp", subject: "biology", name: "Respiration", templates: [respiration] },
@@ -413,6 +451,9 @@ export const TOPICS: Topic[] = [
 
 const TOPIC_BY_ID = Object.fromEntries(TOPICS.map((t) => [t.id, t])) as Record<string, Topic>;
 export const topicsOf = (subject: SubjectId) => TOPICS.filter((t) => t.subject === subject);
+/** Syllabus topics for a subject at the learner's grade (all grades when unknown). */
+export const topicsForGrade = (subject: SubjectId, grade: number | null) =>
+  topicsOf(subject).filter((t) => grade === null || !t.grades || t.grades.includes(grade));
 export const topicName = (id: string) => TOPIC_BY_ID[id]?.name ?? id;
 export const topicSubject = (id: string) => TOPIC_BY_ID[id]?.subject;
 

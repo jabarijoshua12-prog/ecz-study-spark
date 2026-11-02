@@ -4,10 +4,10 @@ import { StudyApp } from "@/components/study-app";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ECZ Study — Daily exam drills" },
-      { name: "description", content: "Two subjects a day, 15 past-paper style questions each. Practise ECZ Maths, Physics, Chemistry and Biology." },
-      { property: "og:title", content: "ECZ Study — Daily exam drills" },
-      { property: "og:description", content: "Two subjects a day, 15 past-paper style questions each. Practise ECZ Maths, Physics, Chemistry and Biology." },
+      { title: "ARES — Daily ECZ Maths drills" },
+      { name: "description", content: "15 past-paper style ECZ Maths questions a day across three topics, with a daily streak to keep you going." },
+      { property: "og:title", content: "ARES — Daily ECZ Maths drills" },
+      { property: "og:description", content: "15 past-paper style ECZ Maths questions a day across three topics, with a daily streak to keep you going." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

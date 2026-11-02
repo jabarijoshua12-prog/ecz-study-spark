@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { SUBJECTS_PER_DAY, QUESTIONS_PER_SUBJECT_DAILY, buildRoutine, type Day } from "@/lib/study-logic";
-import { DayPicker, Dots, GradeOptions, Logo, Mascot, RoutineList, StepShell } from "./ui-bits";
+import { QUESTIONS_PER_SUBJECT_DAILY, type Day } from "@/lib/study-logic";
+import { DayPicker, Dots, GradeOptions, Logo, Mascot, StepShell } from "./ui-bits";
 
 function GoogleG() {
   return (
@@ -108,19 +108,8 @@ export function DaysScreen({ value, onBack, onNext }: { value: Day[]; onBack: ()
       <div className="mt-6 rounded-2xl border-2 bg-card p-4">
         <p className="text-3xl font-black text-primary">{days.length} <span className="text-base text-foreground">day{days.length === 1 ? "" : "s"} a week</span></p>
         <p className="mt-1 text-sm font-semibold text-muted-foreground">
-          {SUBJECTS_PER_DAY} subjects per study day · {QUESTIONS_PER_SUBJECT_DAILY} questions each
+          {QUESTIONS_PER_SUBJECT_DAILY} Maths questions each study day
         </p>
-      </div>
-    </StepShell>
-  );
-}
-
-export function RoutineScreen({ days, onBack, onNext }: { days: Day[]; onBack: () => void; onNext: () => void }) {
-  return (
-    <StepShell progress={1} onBack={onBack} footer={<Button size="lg" className="w-full" onClick={onNext}>Let's go</Button>}>
-      <Mascot>Here's your weekly routine</Mascot>
-      <div className="mt-8">
-        <RoutineList routine={buildRoutine(days)} />
       </div>
     </StepShell>
   );
@@ -133,10 +122,6 @@ export function RoutineEditScreen({ value, onBack, onConfirm }: { value: Day[]; 
       <Mascot>Which days can you study each week?</Mascot>
       <div className="mt-8">
         <DayPicker value={days} onChange={setDays} />
-      </div>
-      <p className="mt-6 text-sm font-semibold text-muted-foreground">Your new routine. Subjects are shared out evenly across your study days.</p>
-      <div className="mt-3">
-        <RoutineList routine={buildRoutine(days)} />
       </div>
     </StepShell>
   );
