@@ -1,29 +1,31 @@
 import { describe, expect, it } from "vitest";
 import { DAYS, SUBJECT_IDS, buildRoutine, outcomeAfterWrong, type Day } from "./study-logic";
-import { TOPICS, buildDailyQuestions, buildTopicQuestions, generateQuestion } from "./question-bank";
+import { TOPICS, buildDailyQuestions, buildTopicQuestions, generateQuestion, topicsForGrade } from "./question-bank";
 
 describe("weekly routine", () => {
-  it("gives each chosen study day exactly 2 different subjects", () => {
+  it("every chosen study day is Mathematics only", () => {
     const days: Day[] = ["Mon", "Wed", "Fri"];
     const routine = buildRoutine(days);
-    for (const d of days) {
-      expect(routine[d]).toHaveLength(2);
-      expect(new Set(routine[d]).size).toBe(2);
-    }
+    for (const d of days) expect(routine[d]).toEqual(["math"]);
     expect(routine.Tue).toBeUndefined();
   });
 
-  it("spreads the core subjects equally across the week", () => {
+  it("can still spread several subjects equally when given them", () => {
     for (let n = 1; n <= 7; n++) {
-      const routine = buildRoutine(DAYS.slice(0, n));
+      const routine = buildRoutine(DAYS.slice(0, n), SUBJECT_IDS);
       const counts = SUBJECT_IDS.map((s) => Object.values(routine).filter((x) => x?.includes(s)).length);
       expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(1);
     }
   });
+});
 
-  it("with 4 study days, every subject comes up twice", () => {
-    const routine = buildRoutine(["Mon", "Tue", "Thu", "Fri"]);
-    for (const s of SUBJECT_IDS) expect(Object.values(routine).filter((x) => x?.includes(s))).toHaveLength(2);
+describe("grade syllabus", () => {
+  it("every grade has at least 3 Maths topics for the daily drill", () => {
+    for (const g of [8, 9, 10, 11, 12]) expect(topicsForGrade("math", g).length).toBeGreaterThanOrEqual(3);
+  });
+  it("Vectors is a Grade 11-12 topic, not Grade 8", () => {
+    expect(topicsForGrade("math", 8).map((t) => t.id)).not.toContain("math-vectors");
+    expect(topicsForGrade("math", 12).map((t) => t.id)).toContain("math-vectors");
   });
 });
 
