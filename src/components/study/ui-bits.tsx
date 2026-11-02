@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Atom, Check, ChevronLeft, Dna, FlaskConical, GraduationCap, Pi, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { DAYS, DAY_NAMES, SUBJECT_NAMES, type Day, type Routine, type SubjectId } from "@/lib/study-logic";
+import { DAYS, DAY_NAMES, type Day, type SubjectId } from "@/lib/study-logic";
 
 export const SUBJECT_ICON: Record<SubjectId, LucideIcon> = {
   math: Pi,
@@ -27,7 +27,7 @@ export function Logo({ small = false }: { small?: boolean }) {
         <GraduationCap className={small ? "size-4" : "size-5"} strokeWidth={2.5} />
       </span>
       <span className={cn("font-black tracking-tight", small ? "text-base" : "text-lg")}>
-        ECZ <span className="text-primary">Study</span>
+        AR<span className="text-primary">ES</span>
       </span>
     </div>
   );
@@ -136,34 +136,6 @@ export function DayPicker({ value, onChange }: { value: Day[]; onChange: (d: Day
           >
             {d.slice(0, 2)}
           </button>
-        );
-      })}
-    </div>
-  );
-}
-
-export function RoutineList({ routine }: { routine: Routine }) {
-  return (
-    <div className="grid gap-1 rounded-2xl border-2 bg-card p-2">
-      {DAYS.filter((d) => routine[d]).map((d, i) => {
-        const subs = routine[d];
-        return (
-          <motion.div key={d} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i }} className="flex items-center gap-2 p-1">
-            <span className={cn("w-10 shrink-0 pl-1 text-sm font-black", !subs && "text-muted-foreground")}>{d}</span>
-            {subs ? (
-              subs.map((s) => {
-                const Icon = SUBJECT_ICON[s];
-                return (
-                  <span key={s} className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-2.5 py-2 text-sm font-bold">
-                    <Icon className="size-4 shrink-0 text-primary" />
-                    <span className="truncate">{SUBJECT_NAMES[s]}</span>
-                  </span>
-                );
-              })
-            ) : (
-              <span className="text-sm font-bold text-muted-foreground">Rest day</span>
-            )}
-          </motion.div>
         );
       })}
     </div>

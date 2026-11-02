@@ -9,6 +9,9 @@ export const SUBJECT_NAMES: Record<SubjectId, string> = {
   chemistry: "Chemistry",
 };
 
+/** Subjects the app currently teaches. Others stay in the bank for later. */
+export const ACTIVE_SUBJECTS: readonly SubjectId[] = ["math"];
+
 export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 export type Day = (typeof DAYS)[number];
 export const DAY_NAMES: Record<Day, string> = {
@@ -21,7 +24,7 @@ export const DAY_NAMES: Record<Day, string> = {
   Sun: "Sunday",
 };
 
-export const SUBJECTS_PER_DAY = 2;
+export const SUBJECTS_PER_DAY = 1;
 export const TOPICS_PER_SUBJECT_DAILY = 3;
 export const QUESTIONS_PER_TOPIC_DAILY = 5;
 export const QUESTIONS_PER_SUBJECT_DAILY = TOPICS_PER_SUBJECT_DAILY * QUESTIONS_PER_TOPIC_DAILY;
@@ -32,7 +35,7 @@ export const XP_PER_CORRECT = 10;
 export type Routine = Partial<Record<Day, SubjectId[]>>;
 
 /** Cycles through the subjects so every subject appears as equally often as possible. */
-export function buildRoutine(days: readonly Day[], subjects: readonly SubjectId[] = SUBJECT_IDS): Routine {
+export function buildRoutine(days: readonly Day[], subjects: readonly SubjectId[] = ACTIVE_SUBJECTS): Routine {
   const routine: Routine = {};
   const perDay = Math.min(SUBJECTS_PER_DAY, subjects.length);
   DAYS.filter((d) => days.includes(d)).forEach((day, i) => {

@@ -28,7 +28,7 @@ export type StudyState = {
   lastStreakDate: string | null;
 };
 
-const KEY = "ecz-study-v2";
+const KEY = "ares-v1";
 
 const initial: StudyState = {
   user: null,

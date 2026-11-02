@@ -1,11 +1,11 @@
-import { BookOpen, House, UserRound } from "lucide-react";
+import { House, ListChecks, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type Tab = "home" | "subjects" | "profile";
+export type Tab = "home" | "topics" | "profile";
 
 const ITEMS = [
   { id: "home", label: "Home", Icon: House },
-  { id: "subjects", label: "Subjects", Icon: BookOpen },
+  { id: "topics", label: "Topics", Icon: ListChecks },
   { id: "profile", label: "Profile", Icon: UserRound },
 ] as const;
 
