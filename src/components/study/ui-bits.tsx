@@ -110,7 +110,7 @@ export function GradeOptions({ value, onChange }: { value: number | null; onChan
   return (
     <div className="grid gap-3">
       <Dialog open={soon !== null} onOpenChange={(o) => !o && setSoon(null)}>
-        <DialogContent className="max-w-xs rounded-3xl text-center">
+        <DialogContent className="max-w-sm rounded-[2rem] text-center">
           <DialogHeader className="items-center text-center">
             <span className="mb-2 grid size-14 place-items-center rounded-2xl bg-primary text-2xl font-black text-primary-foreground">{soon}</span>
             <DialogTitle className="text-xl font-black">Grade {soon} is coming soon</DialogTitle>
