@@ -235,8 +235,8 @@ export function QuizScreen({ session, onChange, onExit, onFinish }: { session: S
       </div>
 
       <Dialog open={leaving} onOpenChange={setLeaving}>
-        <DialogContent className="max-w-sm rounded-3xl border-2">
-          <DialogHeader>
+        <DialogContent className="max-w-xs rounded-3xl text-center">
+          <DialogHeader className="items-center text-center">
             <DialogTitle className="text-xl font-black">Wait, don't go!</DialogTitle>
             <DialogDescription className="font-semibold">Your progress is saved. You'll pick up at question {session.index + 1} next time.</DialogDescription>
           </DialogHeader>
