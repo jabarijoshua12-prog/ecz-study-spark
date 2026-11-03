@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { Atom, Check, ChevronLeft, Dna, FlaskConical, GraduationCap, Pi, type LucideIcon } from "lucide-react";
@@ -101,11 +103,24 @@ export function StepShell({ progress, title, onBack, children, footer }: { progr
 
 export const GRADES = [8, 9, 10, 11, 12];
 
+export const AVAILABLE_GRADES = [11];
+
 export function GradeOptions({ value, onChange }: { value: number | null; onChange: (g: number) => void }) {
+  const [soon, setSoon] = useState<number | null>(null);
   return (
     <div className="grid gap-3">
+      <Dialog open={soon !== null} onOpenChange={(o) => !o && setSoon(null)}>
+        <DialogContent className="max-w-xs rounded-3xl text-center">
+          <DialogHeader className="items-center text-center">
+            <span className="mb-2 grid size-14 place-items-center rounded-2xl bg-primary text-2xl font-black text-primary-foreground">{soon}</span>
+            <DialogTitle className="text-xl font-black">Grade {soon} is coming soon</DialogTitle>
+            <DialogDescription className="font-semibold">We're building it for the next update. ARES is available for Grade 11 right now.</DialogDescription>
+          </DialogHeader>
+          <Button size="lg" className="w-full" onClick={() => setSoon(null)}>Got it</Button>
+        </DialogContent>
+      </Dialog>
       {GRADES.map((g, i) => (
-        <motion.button key={g} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }} onClick={() => onChange(g)} className={choiceClass(value === g)} aria-pressed={value === g}>
+        <motion.button key={g} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }} onClick={() => (AVAILABLE_GRADES.includes(g) ? onChange(g) : setSoon(g))} className={choiceClass(value === g)} aria-pressed={value === g}>
           <span className={cn("grid size-11 place-items-center rounded-xl text-lg font-black", value === g ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")}>{g}</span>
           <span className="flex-1">
             <b className="block text-base">Grade {g}</b>
