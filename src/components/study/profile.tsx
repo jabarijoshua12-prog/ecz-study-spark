@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookCheck, ChevronRight, Flame, GraduationCap, LogOut, Pencil, Zap } from "lucide-react";
+import { ChevronRight, Flame, GraduationCap, LogOut, Pencil, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DAYS, DAY_NAMES } from "@/lib/study-logic";
 import { cn } from "@/lib/utils";
@@ -41,11 +41,10 @@ export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { sta
         </div>
       </section>
 
-      <section className="mt-6 grid grid-cols-3 gap-2">
+      <section className="mt-6 grid grid-cols-2 gap-2">
         {[
           { label: "Day streak", value: state.streak, Icon: Flame },
           { label: "Total XP", value: state.xp, Icon: Zap },
-          { label: "Topics done", value: state.topicsDone.length, Icon: BookCheck },
         ].map(({ label, value, Icon }) => (
           <div key={label} className="rounded-2xl border-2 bg-card p-3">
             <Icon className="size-5 text-primary" strokeWidth={2.6} />
