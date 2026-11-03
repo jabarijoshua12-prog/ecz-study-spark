@@ -1,16 +1,32 @@
 import { useState } from "react";
 import { BookCheck, ChevronRight, Flame, GraduationCap, LogOut, Pencil, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DAYS, DAY_NAMES } from "@/lib/study-logic";
 import { cn } from "@/lib/utils";
 import type { StudyState } from "@/hooks/use-study-store";
-import { GradeOptions } from "./ui-bits";
+import { GradeOptions, StepShell } from "./ui-bits";
 
 export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { state: StudyState; onGrade: (g: number) => void; onEditRoutine: () => void; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
   const user = state.user ?? { name: "Learner", email: "" };
   const initials = user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+
+  if (open) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
+        <StepShell title="Change grade" onBack={() => setOpen(false)} footer={<Button size="lg" variant="secondary" className="w-full" onClick={() => setOpen(false)}>Cancel</Button>}>
+          <p className="mb-6 text-sm font-semibold text-muted-foreground">Pick the grade you're in now.</p>
+          <GradeOptions
+            value={state.grade}
+            onChange={(g) => {
+              onGrade(g);
+              setOpen(false);
+            }}
+          />
+        </StepShell>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-24">
@@ -70,21 +86,6 @@ export function ProfileScreen({ state, onGrade, onEditRoutine, onLogout }: { sta
         <LogOut /> Log out
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm rounded-3xl border-2">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black">Change grade</DialogTitle>
-            <DialogDescription className="font-semibold">Pick the grade you're in now.</DialogDescription>
-          </DialogHeader>
-          <GradeOptions
-            value={state.grade}
-            onChange={(g) => {
-              onGrade(g);
-              setOpen(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
