@@ -10,5 +10,6 @@
 - [x] Tests for quotas, routine and strikes; verify on mobile
 
 - [x] Maths only: one Up next card with 3 grade topics, Topics tab shows grade syllabus, no routine preview screens
+- [x] Grade 11 topic list in the agreed ECZ order, with practice questions for every topic
 
 Later: backend (accounts, real past-paper database, AI question variation).
