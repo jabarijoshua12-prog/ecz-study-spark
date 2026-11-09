@@ -460,12 +460,13 @@ const approxDp: Template = (r) => {
 };
 const LOCI = ["A circle", "The perpendicular bisector of the line joining the points", "A straight line parallel to the given line", "The bisector of the angle", "A pair of intersecting lines"];
 const INSTRUMENTS = ["A compass and a ruler", "A protractor and a ruler", "A set square and a protractor", "A ruler and a pencil"];
+const ARC_RADII = ["More than half the length of the segment", "Exactly half the length of the segment", "Less than half the length of the segment", "Equal to the whole segment"];
 const construction = facts(
   [
     { stems: ["Which instruments are needed to bisect an angle?", "Which pair of instruments is used to construct the bisector of an angle?"], a: "A compass and a ruler", hint: "You draw arcs, then join them with a straight line.", why: "Arcs are drawn with a compass and the line is ruled with a straightedge.", pool: INSTRUMENTS },
     { stems: ["The locus of points equidistant from two fixed points is…"], a: "The perpendicular bisector of the line joining the points", hint: "Every point on it is the same distance from both points.", why: "Points equidistant from two fixed points lie on the perpendicular bisector.", pool: LOCI },
     { stems: ["The locus of points at a fixed distance from a fixed point is…"], a: "A circle", hint: "Think of a string tied to a pin.", why: "A circle is the set of points a fixed distance from a centre.", pool: LOCI },
-    { stems: ["To bisect a line segment with arcs, the radius of each arc must be…"], a: "More than half the length of the segment", hint: "The arcs have to cross each other.", why: "Arcs only intersect when the radius is greater than half the segment." },
+    { stems: ["To bisect a line segment with arcs, the radius of each arc must be…"], a: "More than half the length of the segment", hint: "The arcs have to cross each other.", why: "Arcs only intersect when the radius is greater than half the segment.", pool: ARC_RADII },
     { stems: ["Which instrument is used to measure an angle in a construction?", "Which instrument is used to check the size of an angle?"], a: "A protractor", hint: "It has degrees marked round a half-circle.", why: "A protractor measures angles in degrees.", pool: INSTRUMENTS },
   ],
   LOCI,
@@ -730,14 +731,26 @@ const foodChains: Template = (r) => {
 };
 
 export const TOPICS: Topic[] = [
+  // Grade 11 ECZ Mathematics syllabus, in teaching order.
+  { id: "math-stats", subject: "math", name: "Statistics", templates: [mean], grades: [8, 9, 10, 11, 12] },
+  { id: "math-trig", subject: "math", name: "Trigonometry", templates: [trig], grades: [10, 11, 12] },
+  { id: "math-sequences", subject: "math", name: "Sequences and Series", templates: [sequences, seriesSum], grades: [10, 11, 12] },
+  { id: "math-mensuration", subject: "math", name: "Mensuration", templates: [mensuration, cuboid], grades: [9, 10, 11, 12] },
+  { id: "math-quadratic-eq", subject: "math", name: "Quadratic Equations", templates: [quadraticEq, rootSumProduct], grades: [10, 11, 12] },
+  { id: "math-probability", subject: "math", name: "Probability", templates: [probability], grades: [9, 10, 11, 12] },
+  { id: "math-relations", subject: "math", name: "Relations and Functions", templates: [relations, solveFn, relPairs], grades: [10, 11, 12] },
+  { id: "math-variation", subject: "math", name: "Variation", templates: [variation, jointVariation], grades: [10, 11, 12] },
+  { id: "math-coordinate-geometry", subject: "math", name: "Coordinate Geometry", templates: [gradient, midpoint, coordDistance], grades: [10, 11, 12] },
+  { id: "math-circle-theorems", subject: "math", name: "Circle Theorems", templates: [circleAngles, circleFacts], grades: [10, 11, 12] },
+  { id: "math-quadratic-functions", subject: "math", name: "Quadratic Functions", templates: [quadraticFn, quadraticIntercepts], grades: [11, 12] },
+  { id: "math-approximations", subject: "math", name: "Approximations", templates: [approxSf, approxDp], grades: [10, 11, 12] },
+  { id: "math-construction-loci", subject: "math", name: "Construction and Loci", templates: [construction], grades: [9, 10, 11, 12] },
+  // Kept for the other grades until their syllabus order is confirmed.
   { id: "math-sets", subject: "math", name: "Sets", templates: [sets], grades: [8, 9, 10] },
   { id: "math-linear", subject: "math", name: "Linear equations", templates: [linear], grades: [8, 9, 10] },
-  { id: "math-indices", subject: "math", name: "Indices", templates: [indices], grades: [9, 10, 11] },
-  { id: "math-matrices", subject: "math", name: "Matrices", templates: [matrices], grades: [10, 11, 12] },
-  { id: "math-trig", subject: "math", name: "Trigonometry", templates: [trig], grades: [10, 11, 12] },
-  { id: "math-stats", subject: "math", name: "Statistics", templates: [mean], grades: [8, 9, 11, 12] },
-  { id: "math-vectors", subject: "math", name: "Vectors", templates: [vectors], grades: [11, 12] },
-  { id: "math-probability", subject: "math", name: "Probability", templates: [probability], grades: [9, 11, 12] },
+  { id: "math-indices", subject: "math", name: "Indices", templates: [indices], grades: [9, 10, 12] },
+  { id: "math-matrices", subject: "math", name: "Matrices", templates: [matrices], grades: [10, 12] },
+  { id: "math-vectors", subject: "math", name: "Vectors", templates: [vectors], grades: [12] },
   { id: "bio-cells", subject: "biology", name: "Cell structure", templates: [cells] },
   { id: "bio-food", subject: "biology", name: "Food tests", templates: [foodTests] },
   { id: "bio-resp", subject: "biology", name: "Respiration", templates: [respiration] },

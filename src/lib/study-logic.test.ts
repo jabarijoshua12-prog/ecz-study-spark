@@ -23,7 +23,24 @@ describe("grade syllabus", () => {
   it("every grade has at least 3 Maths topics for the daily drill", () => {
     for (const g of [8, 9, 10, 11, 12]) expect(topicsForGrade("math", g).length).toBeGreaterThanOrEqual(3);
   });
-  it("Vectors is a Grade 11-12 topic, not Grade 8", () => {
+  it("shows the Grade 11 syllabus in the agreed order", () => {
+    expect(topicsForGrade("math", 11).map((t) => t.name)).toEqual([
+      "Statistics",
+      "Trigonometry",
+      "Sequences and Series",
+      "Mensuration",
+      "Quadratic Equations",
+      "Probability",
+      "Relations and Functions",
+      "Variation",
+      "Coordinate Geometry",
+      "Circle Theorems",
+      "Quadratic Functions",
+      "Approximations",
+      "Construction and Loci",
+    ]);
+  });
+  it("Vectors is a Grade 12 topic, not Grade 8", () => {
     expect(topicsForGrade("math", 8).map((t) => t.id)).not.toContain("math-vectors");
     expect(topicsForGrade("math", 12).map((t) => t.id)).toContain("math-vectors");
   });
