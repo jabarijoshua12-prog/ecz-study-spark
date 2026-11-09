@@ -162,6 +162,315 @@ const mean: Template = (r) => {
   };
 };
 
+/* ------- Mathematics: Grade 11 ECZ syllabus topics ------- */
+const ord = (n: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : `${n}th`);
+const sgn = (v: number) => (v >= 0 ? `+ ${v}` : `− ${-v}`);
+const fr = (n: number, d: number) => (d < 0 ? frac(-n, -d) : frac(n, d));
+const pair = (x: number, y: number) => `(${x}, ${y})`;
+
+const sequences: Template = (r) => {
+  const a = int(r, 2, 9), d = int(r, 2, 7), n = int(r, 8, 15);
+  const t = a + (n - 1) * d;
+  return {
+    prompt: pick(r, [
+      `Find the ${ord(n)} term of the sequence ${a}, ${a + d}, ${a + 2 * d}, …`,
+      `The first three terms of an arithmetic sequence are ${a}, ${a + d} and ${a + 2 * d}. What is its ${ord(n)} term?`,
+    ]),
+    correct: String(t),
+    wrong: [t + d, t - d, t + 1, t - 1],
+    hint: "The nth term of an arithmetic sequence is a + (n − 1)d.",
+    steps: [`a = ${a}, d = ${d}`, `T${n} = ${a} + (${n} − 1) × ${d}`, `= ${a} + ${(n - 1) * d} = ${t}`],
+  };
+};
+const seriesSum: Template = (r) => {
+  const a = int(r, 2, 9), d = int(r, 1, 6), n = int(r, 3, 8) * 2;
+  const S = (n * (2 * a + (n - 1) * d)) / 2;
+  return {
+    prompt: pick(r, [
+      `Find the sum of the first ${n} terms of the arithmetic sequence whose first term is ${a} and common difference is ${d}.`,
+      `An arithmetic sequence starts at ${a} and increases by ${d} each time. Calculate the sum of its first ${n} terms.`,
+    ]),
+    correct: String(S),
+    wrong: [S + n, S - d, S + a, n * (2 * a + (n - 1) * d)],
+    hint: "Sum = n/2 × [2a + (n − 1)d].",
+    steps: ["S = n/2 × [2a + (n − 1)d]", `= ${n}/2 × [${2 * a} + (${n} − 1) × ${d}]`, `= ${S}`],
+  };
+};
+const mensuration: Template = (r) => {
+  const kind = pick(r, ["volume", "area", "circumference"] as const);
+  const rad = int(r, 2, 9), h = int(r, 3, 12);
+  if (kind === "volume")
+    return {
+      prompt: `A cylinder has radius ${rad} cm and height ${h} cm. Calculate its volume in terms of π.`,
+      correct: `${rad * rad * h}π cm³`,
+      wrong: [`${2 * rad * rad * h}π cm³`, `${rad * h}π cm³`, `${rad * rad}π cm³`, `${rad * rad * (h + 1)}π cm³`],
+      hint: "Volume of a cylinder = πr²h.",
+      steps: ["V = πr²h", `= π × ${rad}² × ${h}`, `= ${rad * rad * h}π cm³`],
+    };
+  if (kind === "area")
+    return {
+      prompt: `A circle has radius ${rad} cm. Calculate its area in terms of π.`,
+      correct: `${rad * rad}π cm²`,
+      wrong: [`${2 * rad}π cm²`, `${4 * rad * rad}π cm²`, `${rad}π cm²`, `${2 * rad * rad}π cm²`],
+      hint: "Area of a circle = πr².",
+      steps: ["A = πr²", `= π × ${rad}²`, `= ${rad * rad}π cm²`],
+    };
+  return {
+    prompt: `A circle has radius ${rad} cm. Calculate its circumference in terms of π.`,
+    correct: `${2 * rad}π cm`,
+    wrong: [`${rad * rad}π cm`, `${rad}π cm`, `${4 * rad}π cm`, `${2 * rad * rad}π cm`],
+    hint: "Circumference = 2πr.",
+    steps: ["C = 2πr", `= 2 × π × ${rad}`, `= ${2 * rad}π cm`],
+  };
+};
+const cuboid: Template = (r) => {
+  const l = int(r, 2, 9), w = int(r, 2, 9), h = int(r, 2, 9);
+  const total = 2 * (l * w + w * h + l * h);
+  return {
+    prompt: `A closed rectangular tank measures ${l} cm by ${w} cm by ${h} cm. Calculate its total surface area.`,
+    correct: `${total} cm²`,
+    wrong: [`${l * w * h} cm²`, `${l * w + w * h + l * h} cm²`, `${2 * (l * w + w * h)} cm²`, `${total + 2} cm²`],
+    hint: "A closed box has 6 faces: two of each size.",
+    steps: ["Surface area = 2(lw + wh + lh)", `= 2(${l * w} + ${w * h} + ${l * h})`, `= ${total} cm²`],
+  };
+};
+const quadraticEq: Template = (r) => {
+  let p = int(r, -9, 9), q = int(r, -9, 9);
+  while (p === 0 || q === 0 || p === q || Math.abs(p + q) < 2) {
+    p = int(r, -9, 9);
+    q = int(r, -9, 9);
+  }
+  const b = -(p + q), c = p * q;
+  const lo = Math.min(p, q), hi = Math.max(p, q);
+  const eq = `x² ${sgn(b)}x ${sgn(c)} = 0`;
+  return {
+    prompt: pick(r, [`Solve the equation ${eq}.`, `Find the values of x that satisfy ${eq}.`]),
+    correct: `x = ${lo} or x = ${hi}`,
+    wrong: [`x = ${-lo} or x = ${-hi}`, `x = ${lo} or x = ${-hi}`, `x = ${-lo} or x = ${hi}`, `x = ${lo + 1} or x = ${hi - 1}`],
+    hint: "Factorise so that the product of the two brackets is zero.",
+    steps: [`(x ${sgn(-lo)})(x ${sgn(-hi)}) = 0`, `x = ${lo} or x = ${hi}`],
+  };
+};
+const rootSumProduct: Template = (r) => {
+  let p = int(r, -8, 8), q = int(r, -8, 8);
+  while (p === 0 || q === 0 || p === q || Math.abs(p + q) < 2) {
+    p = int(r, -8, 8);
+    q = int(r, -8, 8);
+  }
+  const sum = p + q, prod = p * q, b = -sum, c = prod;
+  const askSum = r() < 0.5;
+  const eq = `x² ${sgn(b)}x ${sgn(c)} = 0`;
+  return {
+    prompt: askSum
+      ? pick(r, [`Without solving, find the sum of the roots of ${eq}.`, `What is the sum of the roots of ${eq}?`])
+      : pick(r, [`Without solving, find the product of the roots of ${eq}.`, `What is the product of the roots of ${eq}?`]),
+    correct: String(askSum ? sum : prod),
+    wrong: askSum ? [String(-sum), String(prod), String(c + 1), String(sum + 1)] : [String(sum), String(-prod), String(b), String(prod + 1)],
+    hint: "For x² + bx + c = 0: sum of roots = −b and product of roots = c.",
+    steps: [`Here b = ${b} and c = ${c}.`, askSum ? `Sum = −b = ${sum}` : `Product = c = ${prod}`],
+  };
+};
+const relations: Template = (r) => {
+  const a = int(r, 2, 9), b = int(r, -9, 9), k = int(r, 2, 9);
+  const f = a * k + b;
+  const fx = `${a}x ${sgn(b)}`;
+  return {
+    prompt: pick(r, [`If f(x) = ${fx}, find f(${k}).`, `Given that f(x) = ${fx}, what is the value of f(${k})?`]),
+    correct: String(f),
+    wrong: [String(a * k - b), String(a * (k + 1) + b), String(a + b), String(f + a)],
+    hint: "Substitute the value of x into the formula.",
+    steps: [`f(${k}) = ${a}(${k}) ${sgn(b)}`, `= ${a * k} ${sgn(b)}`, `= ${f}`],
+  };
+};
+const solveFn: Template = (r) => {
+  const a = int(r, 2, 6), b = int(r, -9, 9), x = int(r, 2, 9), c = a * x + b;
+  return {
+    prompt: `If f(x) = ${a}x ${sgn(b)} and f(x) = ${c}, find the value of x.`,
+    correct: `x = ${x}`,
+    wrong: [`x = ${x + 1}`, `x = ${x - 1}`, `x = ${x + 2}`, `x = ${c - b}`],
+    hint: "Set the formula equal to the value, then undo the operations.",
+    steps: [`${a}x ${sgn(b)} = ${c}`, `${a}x = ${c - b}`, `x = ${x}`],
+  };
+};
+const relPairs: Template = (r) => {
+  const xs = shuffle(r, [1, 3, 5, 7, 9]).slice(0, 3);
+  const ys = shuffle(r, [2, 4, 6, 8, 10]).slice(0, 3);
+  const set = (arr: number[]) => `{ ${[...arr].sort((p, q) => p - q).join(", ")} }`;
+  const pairs = xs.map((x, i) => pair(x, ys[i]!)).join(", ");
+  return {
+    prompt: `A relation is given by R = { ${pairs} }. Write down the range of R.`,
+    correct: set(ys),
+    wrong: [set(xs), set([...ys.slice(0, 2), pick(r, [12, 14, 16])]), set([...xs, 12])],
+    hint: "The range is the set of second coordinates of the ordered pairs.",
+    steps: [`Second coordinates: ${ys.join(", ")}`, `Range = ${set(ys)}`],
+  };
+};
+const variation: Template = (r) => {
+  if (r() < 0.5) {
+    const k = int(r, 2, 8), x1 = int(r, 2, 6), y1 = k * x1, x2 = int(r, 2, 9), y2 = k * x2;
+    return {
+      prompt: `y varies directly as x. If y = ${y1} when x = ${x1}, find y when x = ${x2}.`,
+      correct: String(y2),
+      wrong: [String(y1 * x2), String(y2 + k), String(y2 - k), String(k + x2)],
+      hint: "Direct variation means y = kx. Find k first.",
+      steps: [`k = y ÷ x = ${y1} ÷ ${x1} = ${k}`, `y = ${k} × ${x2} = ${y2}`],
+    };
+  }
+  const x1 = int(r, 2, 6), y1 = int(r, 2, 9), k = x1 * y1;
+  const divisors = Array.from({ length: 11 }, (_, i) => i + 2).filter((d) => k % d === 0 && d !== x1);
+  const x2 = pick(r, divisors.length ? divisors : [k]);
+  const y2 = k / x2;
+  return {
+    prompt: `y varies inversely as x. If y = ${y1} when x = ${x1}, find y when x = ${x2}.`,
+    correct: String(y2),
+    wrong: [String(y1 * x2), String(y2 + 1), String(y2 - 1), String(k - x2)],
+    hint: "Inverse variation means y = k ÷ x, so xy stays constant.",
+    steps: [`k = x × y = ${x1} × ${y1} = ${k}`, `y = ${k} ÷ ${x2} = ${y2}`],
+  };
+};
+const jointVariation: Template = (r) => {
+  const k = int(r, 1, 4), x1 = int(r, 2, 4), y1 = k * x1 * x1, x2 = int(r, 2, 6), y2 = k * x2 * x2;
+  return {
+    prompt: `y varies directly as the square of x. If y = ${y1} when x = ${x1}, find y when x = ${x2}.`,
+    correct: String(y2),
+    wrong: [String(k * x2), String(y1 * x2), String(y2 + k), String(y2 - k)],
+    hint: "y = kx². Use the first pair of values to find k.",
+    steps: [`k = y ÷ x² = ${y1} ÷ ${x1 * x1} = ${k}`, `y = ${k} × ${x2}² = ${y2}`],
+  };
+};
+const gradient: Template = (r) => {
+  const dx = int(r, 1, 6);
+  const dy = pick(r, [-8, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 8].filter((v) => Math.abs(v) !== dx));
+  const x1 = int(r, -6, 4), y1 = int(r, -6, 4);
+  const x2 = x1 + dx, y2 = y1 + dy;
+  const correct = fr(dy, dx);
+  return {
+    prompt: `Find the gradient of the line joining ${pair(x1, y1)} and ${pair(x2, y2)}.`,
+    correct,
+    wrong: [fr(dx, dy), fr(-dy, dx), fr(dy + 1, dx), fr(dy, dx + 1)],
+    hint: "Gradient = change in y ÷ change in x.",
+    steps: [`m = (${y2} − ${y1}) ÷ (${x2} − ${x1})`, `= ${dy} ÷ ${dx}`, `= ${correct}`],
+  };
+};
+const midpoint: Template = (r) => {
+  const x1 = int(r, -6, 4), y1 = int(r, -6, 4);
+  const dx = int(r, 1, 5) * 2, dy = int(r, 1, 5) * 2;
+  const x2 = x1 + dx, y2 = y1 + dy;
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  return {
+    prompt: `Find the midpoint of the line segment joining ${pair(x1, y1)} and ${pair(x2, y2)}.`,
+    correct: pair(mx, my),
+    wrong: [pair(x1 + x2, y1 + y2), pair(x2, y2), pair(x1, y1), pair(mx + 1, my)],
+    hint: "The midpoint is the average of the x-coordinates and the average of the y-coordinates.",
+    steps: [`M = ((${x1} + ${x2}) ÷ 2, (${y1} + ${y2}) ÷ 2)`, `= ${pair(mx, my)}`],
+  };
+};
+const coordDistance: Template = (r) => {
+  const [p, q, m] = pick(r, [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15]] as const);
+  const x1 = int(r, -5, 5), y1 = int(r, -5, 5);
+  const x2 = x1 + p, y2 = y1 + q;
+  return {
+    prompt: `Calculate the distance between the points ${pair(x1, y1)} and ${pair(x2, y2)}.`,
+    correct: `${m} units`,
+    wrong: [`${p + q} units`, `${m + 1} units`, `${m - 1} units`, `${Math.abs(q - p)} units`],
+    hint: "Distance = √((x₂ − x₁)² + (y₂ − y₁)²).",
+    steps: [`d = √(${p}² + ${q}²)`, `= √(${p * p} + ${q * q})`, `= ${m} units`],
+  };
+};
+const circleAngles: Template = (r) => {
+  if (r() < 0.5) {
+    const c = int(r, 2, 30) * 4;
+    return {
+      prompt: `In a circle, the angle at the centre standing on an arc is ${c}°. Find the angle at the circumference standing on the same arc.`,
+      correct: `${c / 2}°`,
+      wrong: [`${c}°`, `${180 - c}°`, `${c * 2}°`, `${c / 2 + 5}°`],
+      hint: "The angle at the centre is twice the angle at the circumference.",
+      steps: ["Angle at centre = 2 × angle at circumference", `= ${c} ÷ 2 = ${c / 2}°`],
+    };
+  }
+  const a = int(r, 6, 17) * 10;
+  return {
+    prompt: `A cyclic quadrilateral has one of its angles equal to ${a}°. Find the angle opposite to it.`,
+    correct: `${180 - a}°`,
+    wrong: [`${a}°`, `${360 - a}°`, `${90 - a / 2}°`, `${180 - a + 10}°`],
+    hint: "Opposite angles of a cyclic quadrilateral add up to 180°.",
+    steps: ["Opposite angles are supplementary", `= 180° − ${a}° = ${180 - a}°`],
+  };
+};
+const CIRCLE_POOL = ["Equal", "Twice", "Half", "180°", "90°", "360°"];
+const circleFacts = facts(
+  [
+    { stems: ["The angle in a semicircle is…", "What is the angle in a semicircle?"], a: "90°", hint: "It is a right angle.", why: "Thales' theorem: the angle in a semicircle is 90°." },
+    { stems: ["The angle between a tangent and the radius at the point of contact is…"], a: "90°", hint: "The tangent meets the radius squarely.", why: "A tangent is perpendicular to the radius at the point of contact." },
+    { stems: ["Angles in the same segment of a circle are…"], a: "Equal", hint: "They stand on the same arc.", why: "Angles in the same segment are equal." },
+    { stems: ["Opposite angles of a cyclic quadrilateral add up to…"], a: "180°", hint: "They are supplementary.", why: "Opposite angles of a cyclic quadrilateral sum to 180°." },
+    { stems: ["The angle at the centre of a circle is … the angle at the circumference standing on the same arc."], a: "Twice", hint: "The centre angle is the bigger one.", why: "Angle at centre = 2 × angle at circumference." },
+  ],
+  CIRCLE_POOL,
+);
+const quadraticFn: Template = (r) => {
+  const p = int(r, -6, 6), q = int(r, -8, 8);
+  const form = `y = (x ${sgn(-p)})² ${sgn(q)}`;
+  return {
+    prompt: pick(r, [`The curve has equation ${form}. What is the minimum value of y?`, `For the curve ${form}, find the least possible value of y.`]),
+    correct: String(q),
+    wrong: [String(p), String(-p), String(-q), String(p + q)],
+    hint: "A squared term is never negative, so its smallest value is 0.",
+    steps: [`(${sgn(-p)})² ≥ 0 for every x`, `So the smallest y is ${q}, when x = ${p}.`],
+  };
+};
+const quadraticIntercepts: Template = (r) => {
+  let p = int(r, -8, 8), q = int(r, -8, 8);
+  while (p === 0 || q === 0 || p === q) {
+    p = int(r, -8, 8);
+    q = int(r, -8, 8);
+  }
+  const lo = Math.min(p, q), hi = Math.max(p, q);
+  const form = `y = (x ${sgn(-p)})(x ${sgn(-q)})`;
+  return {
+    prompt: `The curve has equation ${form}. Where does the curve cross the x-axis?`,
+    correct: `x = ${lo} and x = ${hi}`,
+    wrong: [`x = ${-lo} and x = ${-hi}`, `x = ${lo} and x = ${-hi}`, `x = ${-lo} and x = ${hi}`, `x = ${lo + 1} and x = ${hi - 1}`],
+    hint: "The curve crosses the x-axis where y = 0.",
+    steps: [`Set (x ${sgn(-p)})(x ${sgn(-q)}) = 0`, `x = ${lo} and x = ${hi}`],
+  };
+};
+const approxSf: Template = (r) => {
+  const v = int(r, 1024, 9876) / 100;
+  const correct = String(Number(v.toPrecision(3)));
+  return {
+    prompt: `Correct ${v} to three significant figures.`,
+    correct,
+    wrong: [String(Number(v.toPrecision(2))), String(Number(v.toPrecision(4))), String(Number((v + 0.1).toPrecision(3))), String(Number(v.toPrecision(5)))],
+    hint: "Count significant figures from the first non-zero digit.",
+    steps: [`Count three significant figures from the first non-zero digit of ${v}.`, `The next digit decides whether to round up.`, `Answer: ${correct}.`],
+  };
+};
+const approxDp: Template = (r) => {
+  const v = int(r, 10241, 98769) / 1000;
+  const n = int(r, 1, 2);
+  const correct = v.toFixed(n);
+  return {
+    prompt: `Write ${v} correct to ${n} decimal place${n > 1 ? "s" : ""}.`,
+    correct,
+    wrong: [v.toFixed(n + 1), v.toFixed(n + 2), (v + 0.05).toFixed(n), String(Math.round(v))],
+    hint: "Look at the digit after the one you are rounding to.",
+    steps: [`Keep ${n} digit${n > 1 ? "s" : ""} after the decimal point of ${v}.`, `Answer: ${correct}.`],
+  };
+};
+const LOCI = ["A circle", "The perpendicular bisector of the line joining the points", "A straight line parallel to the given line", "The bisector of the angle", "A pair of intersecting lines"];
+const INSTRUMENTS = ["A compass and a ruler", "A protractor and a ruler", "A set square and a protractor", "A ruler and a pencil"];
+const construction = facts(
+  [
+    { stems: ["Which instruments are needed to bisect an angle?", "Which pair of instruments is used to construct the bisector of an angle?"], a: "A compass and a ruler", hint: "You draw arcs, then join them with a straight line.", why: "Arcs are drawn with a compass and the line is ruled with a straightedge.", pool: INSTRUMENTS },
+    { stems: ["The locus of points equidistant from two fixed points is…"], a: "The perpendicular bisector of the line joining the points", hint: "Every point on it is the same distance from both points.", why: "Points equidistant from two fixed points lie on the perpendicular bisector.", pool: LOCI },
+    { stems: ["The locus of points at a fixed distance from a fixed point is…"], a: "A circle", hint: "Think of a string tied to a pin.", why: "A circle is the set of points a fixed distance from a centre.", pool: LOCI },
+    { stems: ["To bisect a line segment with arcs, the radius of each arc must be…"], a: "More than half the length of the segment", hint: "The arcs have to cross each other.", why: "Arcs only intersect when the radius is greater than half the segment." },
+    { stems: ["Which instrument is used to measure an angle in a construction?", "Which instrument is used to check the size of an angle?"], a: "A protractor", hint: "It has degrees marked round a half-circle.", why: "A protractor measures angles in degrees.", pool: INSTRUMENTS },
+  ],
+  LOCI,
+);
+
 /* ---------------- Physics ---------------- */
 const speed: Template = (r) => {
   const v = int(r, 2, 15), t = int(r, 2, 12), d = v * t;
